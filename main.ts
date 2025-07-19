@@ -358,14 +358,6 @@ class FloatingHeadingsUIManager {
 							behavior: "smooth",
 							block: "center",
 						});
-
-						// highlight effect
-						element.classList.add("floating-headings-highlight");
-						setTimeout(() => {
-							element.classList.remove(
-								"floating-headings-highlight"
-							);
-						}, 1000);
 						break;
 					}
 				}
@@ -373,11 +365,11 @@ class FloatingHeadingsUIManager {
 		} else {
 			const editor = markdownView.editor;
 			if (editor) {
-				editor.setCursor(heading.line, 0);
+				editor.setCursor({ line: heading.line, ch: 0 });
 				editor.scrollIntoView(
 					{
 						from: { line: heading.line, ch: 0 },
-						to: { line: heading.line, ch: 0 },
+						to: { line: heading.line + 1, ch: 0 },
 					},
 					true
 				);
