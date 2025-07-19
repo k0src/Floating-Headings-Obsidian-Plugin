@@ -15,6 +15,7 @@ export interface FloatingHeadingsSettings {
 	panelWidth: number;
 	panelMaxHeight: number;
 	collapsedWidth: number;
+	parseHtmlElements: boolean;
 }
 
 export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
@@ -28,4 +29,5 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	panelWidth: 240,
 	panelMaxHeight: 400,
 	collapsedWidth: 16,
+	parseHtmlElements: false,
 };

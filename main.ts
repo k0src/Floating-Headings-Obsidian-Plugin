@@ -140,7 +140,10 @@ export default class FloatingHeadingsPlugin extends Plugin {
 	}
 
 	private processHeadings(content: string) {
-		const allHeadings = HeadingParser.parseHeadings(content);
+		const allHeadings = HeadingParser.parseHeadings(
+			content,
+			this.settings.parseHtmlElements
+		);
 		const filteredHeadings = HeadingParser.filterHeadingsByLevel(
 			allHeadings,
 			this.settings.maxHeadingLevel

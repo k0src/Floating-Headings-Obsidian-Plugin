@@ -138,5 +138,20 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.ui?.refresh();
 					})
 			);
+
+		new Setting(containerEl)
+			.setName("Parse HTML elements")
+			.setDesc(
+				`Strip HTML tags from heading text to show clean text in the sidebar. (e.g. ### <span style="color:rgb(0, 149, 255)">A Heading</span> -> ### A Heading`
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.parseHtmlElements)
+					.onChange(async (value) => {
+						this.plugin.settings.parseHtmlElements = value;
+						await this.plugin.saveSettings();
+						this.plugin.updateHeadings();
+					})
+			);
 	}
 }

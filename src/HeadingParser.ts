@@ -1,7 +1,10 @@
 import { HeadingInfo } from "./types";
 
 export class HeadingParser {
-	static parseHeadings(content: string): HeadingInfo[] {
+	static parseHeadings(
+		content: string,
+		parseHtml: boolean = false
+	): HeadingInfo[] {
 		const lines = content.split("\n");
 		const headings: HeadingInfo[] = [];
 
@@ -11,7 +14,11 @@ export class HeadingParser {
 
 			if (headingMatch) {
 				const level = headingMatch[1].length;
-				const text = headingMatch[2].trim();
+				let text = headingMatch[2].trim();
+
+				if (parseHtml) {
+					text = this.stripHtmlTags(text);
+				}
 
 				headings.push({
 					text,
@@ -22,6 +29,13 @@ export class HeadingParser {
 		}
 
 		return headings;
+	}
+
+	static stripHtmlTags(text: string): string {
+		const tempDiv = document.createElement("div");
+		tempDiv.innerHTML = text;
+
+		return tempDiv.textContent || tempDiv.innerText || text;
 	}
 
 	static filterHeadingsByLevel(
