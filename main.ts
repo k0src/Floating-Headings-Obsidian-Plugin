@@ -108,7 +108,7 @@ class FloatingHeadingsUIManager {
 
 		container.style.position = "absolute";
 		container.style.top = "50%";
-		container.style.right = "10px";
+		container.style.right = "20px";
 		container.style.transform = "translateY(-50%)";
 		container.style.zIndex = "1000";
 		container.style.pointerEvents = "auto";
