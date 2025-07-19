@@ -1,8 +1,16 @@
-import { Plugin, MarkdownView, WorkspaceLeaf, TFile } from "obsidian";
+import {
+	Plugin,
+	MarkdownView,
+	WorkspaceLeaf,
+	TFile,
+	App,
+	PluginSettingTab,
+	Setting,
+} from "obsidian";
 
 interface HeadingInfo {
 	text: string;
-	level: number; // heading level - #, ##, ###, etc
+	level: number;
 	line: number;
 }
 
@@ -22,9 +30,9 @@ interface FloatingHeadingsSettings {
 const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	enabled: true,
 	maxHeadingsInCollapsed: 25,
-	collapsedLineColor: "var(--text-muted)",
+	collapsedLineColor: "",
 	hoverColor: "var(--text-accent)",
-	panelBackgroundColor: "var(--background-primary)",
+	panelBackgroundColor: "",
 	animationDuration: 150,
 	maxHeadingLevel: 6,
 	panelWidth: 240,
@@ -150,7 +158,8 @@ class FloatingHeadingsUIManager {
 		panel.style.right = `${settings.collapsedWidth + 5}px`;
 		panel.style.width = `${settings.panelWidth}px`;
 		panel.style.maxHeight = `${settings.panelMaxHeight}px`;
-		panel.style.backgroundColor = settings.panelBackgroundColor;
+		panel.style.backgroundColor =
+			settings.panelBackgroundColor || "var(--background-primary)";
 		panel.style.border = "1px solid var(--background-modifier-border)";
 		panel.style.borderRadius = "6px";
 		panel.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.15)";
@@ -277,7 +286,7 @@ class FloatingHeadingsUIManager {
 		item.style.textOverflow = "ellipsis";
 
 		item.textContent = heading.text;
-		item.title = heading.text; // Tooltip
+		item.title = heading.text;
 
 		item.addEventListener("mouseenter", () => {
 			item.style.backgroundColor = "var(--background-modifier-hover)";
@@ -306,7 +315,8 @@ class FloatingHeadingsUIManager {
 
 		line.style.height = "3px";
 		line.style.width = `${lineWidth}%`;
-		line.style.backgroundColor = settings.collapsedLineColor;
+		line.style.backgroundColor =
+			settings.collapsedLineColor || "var(--text-muted)";
 		line.style.marginBottom = "6px";
 		line.style.borderRadius = "1px";
 		line.style.transition = `all ${settings.animationDuration}ms ease-in-out`;
@@ -400,8 +410,151 @@ class FloatingHeadingsUIManager {
 	}
 
 	refresh() {
-		this.updateCollapsedView();
-		this.updateExpandedView();
+		if (this.containerElement && this.containerElement.parentElement) {
+			const parent = this.containerElement.parentElement;
+			this.cleanup();
+			this.mount(parent);
+		}
+	}
+}
+
+class FloatingHeadingsSettingTab extends PluginSettingTab {
+	plugin: FloatingHeadingsPlugin;
+
+	constructor(app: App, plugin: FloatingHeadingsPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
+
+	display(): void {
+		const { containerEl } = this;
+		containerEl.empty();
+
+		new Setting(containerEl)
+			.setName("Enable plugin")
+			.setDesc("Enable or disable the floating headings sidebar.")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.enabled)
+					.onChange(async (value) => {
+						this.plugin.settings.enabled = value;
+						await this.plugin.saveSettings();
+						if (value) {
+							this.plugin.onActiveLeafChange(
+								this.app.workspace.getActiveViewOfType(
+									MarkdownView
+								)?.leaf || null
+							);
+						} else {
+							this.plugin.cleanupUI();
+						}
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Maximum heading level")
+			.setDesc("Only show headings up to this level (1-6).")
+			.addSlider((slider) =>
+				slider
+					.setLimits(1, 6, 1)
+					.setValue(this.plugin.settings.maxHeadingLevel)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.maxHeadingLevel = value;
+						await this.plugin.saveSettings();
+						this.plugin.updateHeadings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Panel width")
+			.setDesc("Width of the expanded panel in pixels.")
+			.addSlider((slider) =>
+				slider
+					.setLimits(180, 400, 10)
+					.setValue(this.plugin.settings.panelWidth)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.panelWidth = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Panel max height")
+			.setDesc("Maximum height of the panel in pixels.")
+			.addSlider((slider) =>
+				slider
+					.setLimits(200, 800, 20)
+					.setValue(this.plugin.settings.panelMaxHeight)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.panelMaxHeight = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Collapsed sidebar width")
+			.setDesc("Width of the collapsed sidebar in pixels.")
+			.addSlider((slider) =>
+				slider
+					.setLimits(8, 32, 2)
+					.setValue(this.plugin.settings.collapsedWidth)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.collapsedWidth = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Animation duration")
+			.setDesc("Duration of hover animations in milliseconds.")
+			.addSlider((slider) =>
+				slider
+					.setLimits(50, 500, 25)
+					.setValue(this.plugin.settings.animationDuration)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.animationDuration = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Line color")
+			.setDesc("Color of the collapsed heading lines.")
+			.addText((text) =>
+				text
+					.setPlaceholder("#DADADA")
+					.setValue(this.plugin.settings.collapsedLineColor)
+					.onChange(async (value) => {
+						this.plugin.settings.collapsedLineColor =
+							value || "var(--text-muted)";
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Panel background color")
+			.setDesc("Background color of the expanded panel.")
+			.addText((text) =>
+				text
+					.setPlaceholder("#1E1E1E")
+					.setValue(this.plugin.settings.panelBackgroundColor)
+					.onChange(async (value) => {
+						this.plugin.settings.panelBackgroundColor =
+							value || "var(--background-primary)";
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
 	}
 }
 
@@ -409,10 +562,12 @@ export default class FloatingHeadingsPlugin extends Plugin {
 	settings: FloatingHeadingsSettings;
 	private currentHeadings: HeadingInfo[] = [];
 	private activeMarkdownView: MarkdownView | null = null;
-	private ui: FloatingHeadingsUIManager;
+	ui: FloatingHeadingsUIManager;
 
 	async onload() {
 		await this.loadSettings();
+
+		this.addSettingTab(new FloatingHeadingsSettingTab(this.app, this));
 
 		this.ui = new FloatingHeadingsUIManager(this);
 
@@ -445,7 +600,7 @@ export default class FloatingHeadingsPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	private onActiveLeafChange(leaf: WorkspaceLeaf | null) {
+	onActiveLeafChange(leaf: WorkspaceLeaf | null) {
 		this.cleanupUI();
 
 		if (!leaf || !this.settings.enabled) {
@@ -508,7 +663,7 @@ export default class FloatingHeadingsPlugin extends Plugin {
 		}, 300);
 	}
 
-	private updateHeadings() {
+	updateHeadings() {
 		if (!this.activeMarkdownView || !this.settings.enabled) {
 			this.currentHeadings = [];
 			return;
@@ -586,7 +741,7 @@ export default class FloatingHeadingsPlugin extends Plugin {
 		}
 	}
 
-	private cleanupUI() {
+	cleanupUI() {
 		if (this.ui) {
 			this.ui.cleanup();
 		}
