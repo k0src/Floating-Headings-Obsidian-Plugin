@@ -28,7 +28,7 @@ const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	animationDuration: 150,
 	maxHeadingLevel: 6,
 	panelWidth: 240,
-	panelMaxHeight: 800,
+	panelMaxHeight: 400,
 	collapsedWidth: 16,
 };
 
@@ -71,7 +71,7 @@ class HeadingParser {
 			return headings;
 		}
 
-		return headings.slice(maxCount);
+		return headings.slice(0, maxCount);
 	}
 }
 
@@ -122,6 +122,8 @@ class FloatingHeadingsUIManager {
 
 		const settings = this.plugin.settings;
 		sidebar.style.width = `${settings.collapsedWidth}px`;
+		sidebar.style.maxHeight = `${settings.panelMaxHeight}px`;
+		sidebar.style.overflowY = "hidden";
 		sidebar.style.opacity = "0.4";
 		sidebar.style.transition = `all ${settings.animationDuration}ms ease-in-out`;
 		sidebar.style.cursor = "pointer";
@@ -218,12 +220,18 @@ class FloatingHeadingsUIManager {
 		const headings = this.plugin.getCurrentHeadings();
 		const settings = this.plugin.settings;
 
-		const limitedHeadings = HeadingParser.limitHeadingsForCollapsed(
-			headings,
-			settings.maxHeadingsInCollapsed
+		const containerMaxHeight = settings.panelMaxHeight;
+		const lineHeight = 3;
+		const lineMargin = 6;
+		const padding = 8;
+		const totalLineHeight = lineHeight + lineMargin;
+		const maxFittingLines = Math.floor(
+			(containerMaxHeight - padding) / totalLineHeight
 		);
 
-		limitedHeadings.forEach((heading, index) => {
+		const fittingHeadings = headings.slice(0, maxFittingLines);
+
+		fittingHeadings.forEach((heading, index) => {
 			const line = this.createHeadingLine(heading, index);
 			this.collapsedSidebar!.appendChild(line);
 		});
@@ -250,10 +258,14 @@ class FloatingHeadingsUIManager {
 		item.className = "floating-heading-item";
 
 		const settings = this.plugin.settings;
-		const indent = (heading.level - 1) * 16;
 
-		item.style.padding = "4px 12px";
-		item.style.paddingLeft = `${indent}px`;
+		const baseIndent = 12;
+		const levelIndent = (heading.level - 1) * 12;
+		const totalIndent = baseIndent + levelIndent;
+
+		item.style.padding = "4px 0";
+		item.style.paddingLeft = `${totalIndent}px`;
+		item.style.paddingRight = "12px";
 		item.style.cursor = "pointer";
 		item.style.fontSize = "12px";
 		item.style.lineHeight = "1.3";
@@ -292,17 +304,13 @@ class FloatingHeadingsUIManager {
 		const settings = this.plugin.settings;
 		const lineWidth = this.calculateLineWidth(heading.level);
 
-		line.style.height = "2px";
+		line.style.height = "3px";
 		line.style.width = `${lineWidth}%`;
 		line.style.backgroundColor = settings.collapsedLineColor;
-		line.style.marginBottom = "4px";
+		line.style.marginBottom = "6px";
 		line.style.borderRadius = "1px";
 		line.style.transition = `all ${settings.animationDuration}ms ease-in-out`;
 		line.style.cursor = "pointer";
-
-		line.addEventListener("click", () => {
-			this.scrollToHeading(heading);
-		});
 
 		return line;
 	}
