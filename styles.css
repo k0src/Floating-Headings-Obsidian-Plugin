@@ -10,7 +10,6 @@
 	border-radius: 4px;
 	background-color: var(--background-primary);
 	border: 1px solid var(--border-color);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .floating-heading-line {
@@ -21,14 +20,6 @@
 .floating-heading-line:hover {
 	transform: scaleX(1.1);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.theme-dark .floating-headings-collapsed {
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.theme-dark .floating-heading-line:hover {
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .theme-light .floating-headings-collapsed {

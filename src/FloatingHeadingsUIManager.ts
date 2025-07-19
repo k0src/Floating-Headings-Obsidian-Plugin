@@ -81,7 +81,6 @@ export class FloatingHeadingsUIManager {
 			settings.panelBackgroundColor || "var(--background-primary)";
 		panel.style.border = "1px solid var(--background-modifier-border)";
 		panel.style.borderRadius = "6px";
-		panel.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.15)";
 		panel.style.overflowY = "auto";
 		panel.style.padding = "8px 0";
 		panel.style.opacity = "0";
