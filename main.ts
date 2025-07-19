@@ -1,3 +1,5 @@
+// fix css and creating els https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines
+
 import { Plugin, MarkdownView, WorkspaceLeaf, TFile } from "obsidian";
 
 import {
