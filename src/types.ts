@@ -16,6 +16,8 @@ export interface FloatingHeadingsSettings {
 	panelMaxHeight: number;
 	collapsedWidth: number;
 	parseHtmlElements: boolean;
+	useCustomRegex: boolean;
+	customRegex: string;
 }
 
 export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
@@ -30,4 +32,6 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	panelMaxHeight: 400,
 	collapsedWidth: 16,
 	parseHtmlElements: false,
+	useCustomRegex: false,
+	customRegex: "^(#{1,6})\\s+(.+)$",
 };

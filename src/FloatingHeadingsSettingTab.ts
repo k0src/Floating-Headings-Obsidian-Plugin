@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting, MarkdownView } from "obsidian";
 import type FloatingHeadingsPlugin from "../main";
+import { HeadingParser } from "./HeadingParser";
 
 export class FloatingHeadingsSettingTab extends PluginSettingTab {
 	plugin: FloatingHeadingsPlugin;
@@ -155,5 +156,58 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.updateHeadings();
 					})
 			);
+
+		new Setting(containerEl)
+			.setName("Use custom regex")
+			.setDesc(
+				"Enable custom regular expression for parsing headings instead of standard markdown format."
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.useCustomRegex)
+					.onChange(async (value) => {
+						this.plugin.settings.useCustomRegex = value;
+						await this.plugin.saveSettings();
+						this.plugin.updateHeadings();
+						this.display();
+					})
+			);
+
+		if (this.plugin.settings.useCustomRegex) {
+			new Setting(containerEl)
+				.setName("Custom regex pattern")
+				.setDesc(
+					// prettier-ignore
+					"Regular expression to match heading lines. Use first capture group for header level, and the last for the heading text to display. For example, `/^(#{1,6})\s+[a-zA-Z]\.\s+(.*)$/m` matches `## a. Title` styles, and shows 'Title'."
+				)
+				.addText((text) => {
+					const updateRegex = async (value: string) => {
+						if (HeadingParser.isValidRegex(value)) {
+							this.plugin.settings.customRegex = value;
+							await this.plugin.saveSettings();
+							this.plugin.updateHeadings();
+							text.inputEl.removeClass("invalid-regex");
+							text.inputEl.style.borderColor = "";
+						} else {
+							text.inputEl.addClass("invalid-regex");
+							text.inputEl.style.borderColor =
+								"var(--text-error)";
+						}
+					};
+
+					text.setValue(this.plugin.settings.customRegex).onChange(
+						updateRegex
+					);
+
+					if (
+						!HeadingParser.isValidRegex(
+							this.plugin.settings.customRegex
+						)
+					) {
+						text.inputEl.addClass("invalid-regex");
+						text.inputEl.style.borderColor = "var(--text-error)";
+					}
+				});
+		}
 	}
 }
