@@ -333,6 +333,7 @@ class FloatingHeadingsUIManager {
 		}
 	}
 
+	// BROKEN
 	private scrollToHeading(heading: HeadingInfo) {
 		const markdownView = this.plugin.getActiveMarkdownView();
 		if (!markdownView) return;
@@ -345,23 +346,29 @@ class FloatingHeadingsUIManager {
 				".markdown-reading-view"
 			);
 
-			if (readingView) {
+			if (!readingView) return;
+
+			setTimeout(() => {
 				const headingSelectors = ["h1", "h2", "h3", "h4", "h5", "h6"];
-				const headingElements = readingView.querySelectorAll(
-					headingSelectors.join(", ")
+				const headingElements = Array.from(
+					readingView.querySelectorAll<HTMLHeadingElement>(
+						headingSelectors.join(", ")
+					)
 				);
 
-				for (let i = 0; i < headingElements.length; i++) {
-					const element = headingElements[i];
-					if (element.textContent?.trim() === heading.text) {
-						element.scrollIntoView({
+				const matchText = heading.text.trim();
+
+				for (const el of headingElements) {
+					const elText = el.textContent?.trim();
+					if (elText === matchText) {
+						el.scrollIntoView({
 							behavior: "smooth",
 							block: "center",
 						});
-						break;
+						return;
 					}
 				}
-			}
+			}, 50);
 		} else {
 			const editor = markdownView.editor;
 			if (editor) {
