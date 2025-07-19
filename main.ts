@@ -310,7 +310,6 @@ class FloatingHeadingsUIManager {
 		line.style.marginBottom = "6px";
 		line.style.borderRadius = "1px";
 		line.style.transition = `all ${settings.animationDuration}ms ease-in-out`;
-		line.style.cursor = "pointer";
 
 		return line;
 	}
@@ -338,23 +337,14 @@ class FloatingHeadingsUIManager {
 		const markdownView = this.plugin.getActiveMarkdownView();
 		if (!markdownView) return;
 
-		const editor = markdownView.editor;
+		const isReadingMode =
+			!markdownView.getMode || markdownView.getMode() === "preview";
 
-		// editor mode
-		if (editor) {
-			editor.setCursor(heading.line, 0);
-			editor.scrollIntoView(
-				{
-					from: { line: heading.line, ch: 0 },
-					to: { line: heading.line, ch: 0 },
-				},
-				true
-			);
-		} else {
-			// reading mode
+		if (isReadingMode) {
 			const readingView = markdownView.containerEl.querySelector(
 				".markdown-reading-view"
 			);
+
 			if (readingView) {
 				const headingSelectors = ["h1", "h2", "h3", "h4", "h5", "h6"];
 				const headingElements = readingView.querySelectorAll(
@@ -379,6 +369,18 @@ class FloatingHeadingsUIManager {
 						break;
 					}
 				}
+			}
+		} else {
+			const editor = markdownView.editor;
+			if (editor) {
+				editor.setCursor(heading.line, 0);
+				editor.scrollIntoView(
+					{
+						from: { line: heading.line, ch: 0 },
+						to: { line: heading.line, ch: 0 },
+					},
+					true
+				);
 			}
 		}
 	}
@@ -422,7 +424,10 @@ export default class FloatingHeadingsPlugin extends Plugin {
 			)
 		);
 
-		this.onActiveLeafChange(this.app.workspace.activeLeaf);
+		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (activeView) {
+			this.onActiveLeafChange(activeView.leaf);
+		}
 	}
 
 	onunload() {
@@ -546,14 +551,19 @@ export default class FloatingHeadingsPlugin extends Plugin {
 	private mountUI() {
 		if (!this.activeMarkdownView || !this.ui) return;
 
-		let targetContainer: HTMLElement | null = null;
-		targetContainer =
-			this.activeMarkdownView.containerEl.querySelector(".cm-editor");
+		const isReadingMode =
+			!this.activeMarkdownView.getMode ||
+			this.activeMarkdownView.getMode() === "preview";
 
-		if (!targetContainer) {
+		let targetContainer: HTMLElement | null = null;
+
+		if (isReadingMode) {
 			targetContainer = this.activeMarkdownView.containerEl.querySelector(
 				".markdown-reading-view"
 			);
+		} else {
+			targetContainer =
+				this.activeMarkdownView.containerEl.querySelector(".cm-editor");
 		}
 
 		if (!targetContainer) {
