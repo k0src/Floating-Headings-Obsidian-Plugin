@@ -85,7 +85,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			.setDesc("Width of the collapsed sidebar in pixels.")
 			.addSlider((slider) =>
 				slider
-					.setLimits(8, 32, 2)
+					.setLimits(8, 48, 2)
 					.setValue(this.plugin.settings.collapsedWidth)
 					.setDynamicTooltip()
 					.onChange(async (value) => {

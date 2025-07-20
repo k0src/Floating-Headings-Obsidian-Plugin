@@ -9,6 +9,7 @@ export class HeadingParser {
 	): HeadingInfo[] {
 		const lines = content.split("\n");
 		const headings: HeadingInfo[] = [];
+		let inCodeBlock = false;
 
 		// Default regex pattern for markdown headings
 		let regexPattern = /^(#{1,6})\s+(.+)$/m;
@@ -31,8 +32,27 @@ export class HeadingParser {
 		}
 
 		for (let i = 0; i < lines.length; i++) {
-			const line = lines[i].trim();
-			const headingMatch = line.match(regexPattern);
+			const line = lines[i];
+			const trimmedLine = line.trim();
+
+			if (trimmedLine.startsWith("```")) {
+				inCodeBlock = !inCodeBlock;
+				continue;
+			}
+
+			if (inCodeBlock) {
+				continue;
+			}
+
+			if (trimmedLine.startsWith("`") && !trimmedLine.startsWith("```")) {
+				continue;
+			}
+
+			if (line.startsWith("    ") || line.startsWith("\t")) {
+				continue;
+			}
+
+			const headingMatch = trimmedLine.match(regexPattern);
 
 			if (headingMatch) {
 				let level: number;
@@ -59,7 +79,7 @@ export class HeadingParser {
 				}
 
 				if (!text || text.length === 0) {
-					text = line.trim();
+					text = trimmedLine;
 				}
 
 				if (parseHtml) {
@@ -78,7 +98,6 @@ export class HeadingParser {
 	}
 
 	static stripHtmlTags(text: string): string {
-		// Use DOMParser for safer HTML parsing
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(text, "text/html");
 
