@@ -25,34 +25,18 @@ export class FloatingHeadingsUIManager {
 		this.containerElement.appendChild(this.expandedPanel);
 		parentElement.appendChild(this.containerElement);
 
+		this.updateCSSProperties();
 		this.updateCollapsedView();
 		this.updateExpandedView();
 	}
 
 	private createContainer(): HTMLElement {
 		const container = createDiv("floating-headings-container");
-
-		container.style.position = "absolute";
-		container.style.top = "50%";
-		container.style.right = "20px";
-		container.style.transform = "translateY(-50%)";
-		container.style.zIndex = "1000";
-		container.style.pointerEvents = "auto";
-
 		return container;
 	}
 
 	private createCollapsedSidebar(): HTMLElement {
 		const sidebar = createDiv("floating-headings-collapsed");
-
-		const settings = this.plugin.settings;
-		sidebar.style.width = `${settings.collapsedWidth}px`;
-		sidebar.style.maxHeight = `${settings.panelMaxHeight}px`;
-		sidebar.style.overflowY = "hidden";
-		sidebar.style.opacity = "0.4";
-		sidebar.style.transition = `all ${settings.animationDuration}ms ease-in-out`;
-		sidebar.style.cursor = "pointer";
-		sidebar.style.padding = "4px 0";
 
 		sidebar.addEventListener("mouseenter", () => {
 			this.onMouseEnter();
@@ -67,25 +51,6 @@ export class FloatingHeadingsUIManager {
 
 	private createExpandedPanel(): HTMLElement {
 		const panel = createDiv("floating-headings-expanded");
-
-		const settings = this.plugin.settings;
-		panel.style.position = "absolute";
-		panel.style.top = "0";
-		panel.style.right = `${settings.collapsedWidth + 5}px`;
-		panel.style.width = `${settings.panelWidth}px`;
-		panel.style.maxHeight = `${settings.panelMaxHeight}px`;
-		panel.style.backgroundColor =
-			settings.panelBackgroundColor || "var(--background-primary)";
-		panel.style.border = "1px solid var(--background-modifier-border)";
-		panel.style.borderRadius = "6px";
-		panel.style.overflowY = "auto";
-		panel.style.padding = "8px 0";
-		panel.style.opacity = "0";
-		panel.style.transform = "scaleX(0)";
-		panel.style.transformOrigin = "right center";
-		panel.style.transition = `all ${settings.animationDuration}ms ease-in-out`;
-		panel.style.pointerEvents = "none";
-		panel.style.zIndex = "1001";
 
 		panel.addEventListener("mouseenter", () => {
 			this.onMouseEnter();
@@ -119,21 +84,15 @@ export class FloatingHeadingsUIManager {
 	private showExpandedPanel() {
 		if (!this.expandedPanel || !this.collapsedSidebar) return;
 
-		this.collapsedSidebar.style.opacity = "0.9";
-
-		this.expandedPanel.style.pointerEvents = "auto";
-		this.expandedPanel.style.opacity = "1";
-		this.expandedPanel.style.transform = "scaleX(1)";
+		this.collapsedSidebar.classList.add("hovered");
+		this.expandedPanel.classList.add("visible");
 	}
 
 	private hideExpandedPanel() {
 		if (!this.expandedPanel || !this.collapsedSidebar) return;
 
-		this.collapsedSidebar.style.opacity = "0.4";
-
-		this.expandedPanel.style.pointerEvents = "none";
-		this.expandedPanel.style.opacity = "0";
-		this.expandedPanel.style.transform = "scaleX(0)";
+		this.collapsedSidebar.classList.remove("hovered");
+		this.expandedPanel.classList.remove("visible");
 	}
 
 	updateCollapsedView() {
@@ -180,35 +139,10 @@ export class FloatingHeadingsUIManager {
 	): HTMLElement {
 		const item = createDiv("floating-heading-item");
 
-		const settings = this.plugin.settings;
-
-		const baseIndent = 12;
-		const levelIndent = (heading.level - 1) * 12;
-		const totalIndent = baseIndent + levelIndent;
-
-		item.style.padding = "4px 0";
-		item.style.paddingLeft = `${totalIndent}px`;
-		item.style.paddingRight = "12px";
-		item.style.cursor = "pointer";
-		item.style.fontSize = "12px";
-		item.style.lineHeight = "1.3";
-		item.style.color = "var(--text-normal)";
-		item.style.borderRadius = "3px";
-		item.style.transition = `background-color ${settings.animationDuration}ms ease-in-out`;
-		item.style.whiteSpace = "nowrap";
-		item.style.overflow = "hidden";
-		item.style.textOverflow = "ellipsis";
+		item.setAttribute("data-level", heading.level.toString());
 
 		item.textContent = heading.text;
 		item.title = heading.text;
-
-		item.addEventListener("mouseenter", () => {
-			item.style.backgroundColor = "var(--background-modifier-hover)";
-		});
-
-		item.addEventListener("mouseleave", () => {
-			item.style.backgroundColor = "transparent";
-		});
 
 		item.addEventListener("click", () => {
 			this.scrollToHeading(heading);
@@ -223,37 +157,9 @@ export class FloatingHeadingsUIManager {
 	): HTMLElement {
 		const line = createDiv("floating-heading-line");
 
-		const settings = this.plugin.settings;
-		const lineWidth = this.calculateLineWidth(heading.level);
-
-		line.style.height = "3px";
-		line.style.width = `${lineWidth}%`;
-		line.style.backgroundColor =
-			settings.collapsedLineColor || "var(--text-muted)";
-		line.style.marginBottom = "6px";
-		line.style.borderRadius = "1px";
-		line.style.transition = `all ${settings.animationDuration}ms ease-in-out`;
+		line.setAttribute("data-level", heading.level.toString());
 
 		return line;
-	}
-
-	private calculateLineWidth(level: number): number {
-		switch (level) {
-			case 1:
-				return 100;
-			case 2:
-				return 75;
-			case 3:
-				return 55;
-			case 4:
-				return 40;
-			case 5:
-				return 30;
-			case 6:
-				return 25;
-			default:
-				return 20;
-		}
 	}
 
 	private scrollToHeading(heading: HeadingInfo) {
@@ -322,10 +228,48 @@ export class FloatingHeadingsUIManager {
 	}
 
 	refresh() {
+		this.updateCSSProperties();
 		if (this.containerElement && this.containerElement.parentElement) {
 			const parent = this.containerElement.parentElement;
 			this.cleanup();
 			this.mount(parent);
+		}
+	}
+
+	private updateCSSProperties() {
+		if (!this.containerElement) return;
+
+		const settings = this.plugin.settings;
+
+		this.containerElement.style.setProperty(
+			"--floating-headings-collapsed-width",
+			`${settings.collapsedWidth}px`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-panel-width",
+			`${settings.panelWidth}px`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-panel-max-height",
+			`${settings.panelMaxHeight}px`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-animation-duration",
+			`${settings.animationDuration}ms`
+		);
+
+		if (settings.panelBackgroundColor) {
+			this.containerElement.style.setProperty(
+				"--floating-headings-panel-bg",
+				settings.panelBackgroundColor
+			);
+		}
+
+		if (settings.collapsedLineColor) {
+			this.containerElement.style.setProperty(
+				"--floating-headings-line-color",
+				settings.collapsedLineColor
+			);
 		}
 	}
 }
