@@ -22,7 +22,7 @@ An Obsidian plugin that displays a floating, collapsible outline of your note's 
 
 ### From Obsidian Community Plugins
 
-_Coming soon - pending review_
+_Coming soon_
 
 ## Settings
 
@@ -32,13 +32,16 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 
 -   **Enable plugin**: Toggle the plugin on/off
 -   **Maximum heading level**: Filter headings by level
--   **Animation duration**: Control transition speed
+-   **Sidebar position**: Choose which side of the screen the sidebar appears on.
 
 ### Visual Customization
 
 -   **Panel width**: Adjust the expanded panel width
--   **Panel max height**: Set maximum height for the headings panel
+-   **Panel max height**: Set maximum height for the panel
 -   **Collapsed width**: Width of the collapsed sidebar
+-   **Animation duration**: Control transition speed
+-   **Line thickness**: Set the thickness of the collasped heading lines.
+-   **Panel scroll position**: Change the scroll position of the panel when opened. Can be set to the top of the panel, the current header, or the previous scroll position.
 -   **Panel background color**: Custom background color
 -   **Collapsed line color**: Color for heading indicators
 
@@ -47,18 +50,58 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 -   **Parse HTML elements**: Enable parsing of HTML heading tags
 -   **Custom regex pattern**: Define your own heading detection pattern
 
-### Custom Regex Examples
+### Custom Regex
 
--   **Numbered headings**: `^(\d+\.)\s+(.+)$` - Matches "1. Title"
--   **Mixed markdown**: `^(#{1,6}|\d+\.)\s+(.+)$` - Matches both # and numbered headings
+Custom Regex patterns can be used to parse and extract heading text from headers. By default, the panel shows the raw text of the heading. If you want to extract specific text, you can define a custom regex pattern, using a named capture group `heading_text`.
+
+#### Custom Regex Examples
+
+-   **Link heading**:
+    -   Regex pattern: `/^(#{1,6})\s+\[\[(?<heading_text>[^\]]+)\]\]\s*$/;`
+    -   Example match: `# [[Some Page]]`
+    -   Heading text: `Some Page`
+-   **Span with link**:
+    -   Regex pattern: `/^(#{1,6})\s+<span[^>]*>\[\[.*?\]\]\s+(?<heading_text>.*?)<\/span>$/;`
+    -   Example match: `## <span style="color:red">[[note]] Red Heading</span>`
+    -   Heading text: `Red Heading`
+-   **Inline latex**:
+    -   Regex pattern: `/^(#{1,6})\s+\$(?<heading_text>[^$]+)\$\s*$/;`
+    -   Example match: `## $O^n$`
+    -   Heading text: `O^n`
+-   **Bold heading**:
+    -   Regex pattern: `/^(#{1,6})\s+\*\*(?<heading_text>.+?)\*\*\s*$/;`
+    -   Example match: `### **Bold Heading**`
+    -   Heading text: `Bold Heading`
+-   **List heading**:
+    -   Regex pattern: `/^(#{1,6})\s+[a-zA-Z]\.\s+(?<heading_text>.+)$/;`
+    -   Example match: `#### a. List Heading`
+    -   Heading text: `List Heading`
 
 ## Theming
 
+### Obsidian CSS Variables
+
+The plugin uses Obsidian's built-in CSS variables for consistent theming:
+
 -   `--text-normal`: Heading text color
--   `--text-muted`: Collapsed line indicators
--   `--background-primary`: Panel background
+-   `--text-muted`: Collapsed line indicators and vertical lines
+-   `--text-accent`: Active heading highlight color
+-   `--background-primary`: Panel background (fallback)
 -   `--background-modifier-border`: Panel border
 -   `--background-modifier-hover`: Hover effects
+-   `--color-accent`: Active heading color
+
+### Plugin-Specific CSS Variables
+
+Override these custom properties to change the appearance of the plugin:
+
+-   `--floating-headings-collapsed-width`: Width of the collapsed sidebar (default: 16px)
+-   `--floating-headings-panel-width`: Width of the expanded panel (default: 240px)
+-   `--floating-headings-panel-max-height`: Maximum height of the panel (default: 400px)
+-   `--floating-headings-panel-bg`: Custom panel background color
+-   `--floating-headings-line-color`: Color of collapsed heading lines
+-   `--floating-headings-line-thickness`: Thickness of collapsed heading lines (default: 3px)
+-   `--floating-headings-animation-duration`: Animation speed in milliseconds (default: 150ms)
 
 ### Custom CSS
 
@@ -83,6 +126,20 @@ Add custom styles in your `snippets` folder:
 /* Style individual heading items */
 .floating-heading-item {
 	/* Your custom styles */
+}
+
+/* Level-specific styling */
+.floating-heading-item[data-level="1"] {
+	/* H1 heading styles */
+}
+
+.floating-heading-item[data-level="2"] {
+	/* H2 heading styles */
+}
+
+/* Active heading highlight */
+.floating-heading-item.active {
+	/* Active heading styles */
 }
 ```
 

@@ -12,22 +12,22 @@ export class HeadingParser {
 		let inCodeBlock = false;
 
 		// Default regex pattern for markdown headings
-		let regexPattern = /^(#{1,6})\s+(.+)$/m;
+		let regexPattern = /^(#{1,6})\s+(.+)$/;
 
 		if (useCustomRegex && customRegex) {
 			try {
-				// Support flags (e.g., "m", "i") if passed in customRegex
-				// Example customRegex: "^(#{1,6})\\s+\\d+\\.\\s+(.*)$" with optional "m" flag
+				// Support flags (e.g., "g", "i", "m") if passed in customRegex
+				// Example customRegex: "/^(#{1,6})\\s+\\d+\\.\\s+(.*)$/gm" with flags
 				const parts = customRegex.match(/^\/(.+)\/([gimsuy]*)$/);
 				if (parts) {
 					regexPattern = new RegExp(parts[1], parts[2]);
 				} else {
-					// If no delimiter-slash format, fallback to default "m" flag
-					regexPattern = new RegExp(customRegex, "m");
+					// If no delimiter-slash format, use pattern as-is without default flags
+					regexPattern = new RegExp(customRegex);
 				}
 			} catch (error) {
-				// Fallback
-				regexPattern = /^(#{1,6})\s+(.+)$/m;
+				// Fallback to default pattern
+				regexPattern = /^(#{1,6})\s+(.+)$/;
 			}
 		}
 
@@ -58,10 +58,22 @@ export class HeadingParser {
 				let level: number;
 				let text: string;
 
-				const captureGroups = headingMatch.slice(1);
 				if (useCustomRegex && customRegex) {
-					const levelGroup = captureGroups[0];
+					const captureGroups = headingMatch.slice(1);
 
+					// Use named group "heading_text" if available
+					if (
+						headingMatch.groups &&
+						headingMatch.groups.heading_text
+					) {
+						text = headingMatch.groups.heading_text.trim();
+					} else {
+						// Fallback to last capture group
+						text = captureGroups[captureGroups.length - 1].trim();
+					}
+
+					// Determine level from first capture group
+					const levelGroup = captureGroups[0];
 					if (levelGroup.includes("#")) {
 						level = levelGroup.length;
 					} else if (!isNaN(parseInt(levelGroup))) {
@@ -69,9 +81,6 @@ export class HeadingParser {
 					} else {
 						level = 1;
 					}
-
-					// Use last group as heading text
-					text = captureGroups[captureGroups.length - 1].trim();
 				} else {
 					// Default markdown parsing
 					level = headingMatch[1].length;
@@ -124,8 +133,19 @@ export class HeadingParser {
 
 	static isValidRegex(pattern: string): boolean {
 		try {
-			new RegExp(pattern);
+			const regex = new RegExp(pattern);
+			// Test if the regex is syntactically valid
+			regex.test("test string");
 			return true;
+		} catch (error) {
+			return false;
+		}
+	}
+
+	static hasHeadingTextGroup(pattern: string): boolean {
+		try {
+			// Check if the pattern contains a named group "heading_text"
+			return pattern.includes("?<heading_text>");
 		} catch (error) {
 			return false;
 		}

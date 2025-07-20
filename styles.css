@@ -167,6 +167,12 @@
 	transform-origin: left center;
 }
 
+.invalid-regex {
+	border-color: var(--color-red);
+	background-color: var(--color-red-rgb, 255, 70, 70, 0.1);
+	box-shadow: 0 0 0 2px rgba(var(--color-red-rgb, 255, 70, 70), 0.2);
+}
+
 .theme-light .floating-headings-collapsed {
 	background-color: rgba(255, 255, 255, 0.95);
 	border-color: var(--border-color);

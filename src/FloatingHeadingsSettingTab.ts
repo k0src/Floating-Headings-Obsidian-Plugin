@@ -217,8 +217,9 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 				.setName("Custom regex pattern")
 				.setDesc(
 					// prettier-ignore
-					"Regular expression to match heading lines. Use first capture group for header level, and the last for the heading text to display. For example, `/^(#{1,6})\s+[a-zA-Z]\.\s+(.*)$/m` matches `## a. Title` styles, and shows 'Title'."
+					"Define regex to extract heading text for the panel. Use a named group `(?<heading_text>...)` for the group to use as the heading text. For example, using `/^(#{1,6})\s+<span[^>]*>\[\[.*?\]\]\s+(?<heading_text>.*?)<\/span>$/` will extract 'Heading Text' from `## <span style='color:red'>[[link]] Heading Text</span>\`"
 				)
+
 				.addText((text) => {
 					const updateRegex = async (value: string) => {
 						if (HeadingParser.isValidRegex(value)) {

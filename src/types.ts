@@ -39,5 +39,6 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	panelScrollPosition: "previous",
 	parseHtmlElements: false,
 	useCustomRegex: false,
-	customRegex: "^(#{1,6})\\s+(.+)$",
+	//prettier-ignore
+	customRegex: "/^(#{1,6})\s+(.+)$/m",
 };
