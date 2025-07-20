@@ -170,6 +170,7 @@ export class FloatingHeadingsUIManager {
 			const panelHeight = this.expandedPanel.clientHeight;
 			const itemHeight = targetItem.offsetHeight;
 			const itemTop = targetItem.offsetTop;
+
 			const scrollPosition = itemTop - panelHeight / 2 + itemHeight / 2;
 			this.expandedPanel.scrollTop = Math.max(0, scrollPosition);
 		}
