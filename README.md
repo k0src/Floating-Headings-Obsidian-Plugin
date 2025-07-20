@@ -173,6 +173,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   [ ] Highlight headings when navigated to
 -   [ ] Filter input
 -   [ ] Lock open/close hotkey
+-   [ ] Support for multiple Regex patterns
 -   [ ] Per-note settings with YAML frontmatter
 -   [ ] Fix reading mode navigation
 -   [ ] Finalize styles
