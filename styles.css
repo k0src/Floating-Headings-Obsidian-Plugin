@@ -7,6 +7,7 @@
 	transform: translateY(-50%);
 	z-index: var(--layer-popover);
 	pointer-events: auto;
+	isolation: isolate;
 }
 
 .floating-headings-container.position-left {
@@ -18,17 +19,17 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
+	justify-content: space-between;
 	border-radius: var(--radius-s);
 	background-color: var(--background-primary);
 	border: var(--border-width) solid var(--border-color);
 	overflow-y: hidden;
 	opacity: 0.4;
 	cursor: var(--cursor-link);
-	padding: var(--size-2-2) 0;
+	padding: var(--size-4-2) var(--size-2-1);
 	transition: all var(--floating-headings-animation-duration, 150ms)
 		ease-in-out;
 	width: var(--floating-headings-collapsed-width, 16px);
-	max-height: var(--floating-headings-panel-max-height, 400px);
 }
 
 .floating-headings-container.position-left .floating-headings-collapsed {
@@ -41,7 +42,8 @@
 
 .floating-headings-expanded {
 	position: absolute;
-	top: 0;
+	top: 50%;
+	transform: translateY(-50%) scaleX(0);
 	background-color: var(
 		--floating-headings-panel-bg,
 		var(--background-primary)
@@ -51,7 +53,6 @@
 	overflow-y: auto;
 	padding: var(--size-4-2) 0;
 	opacity: 0;
-	transform: scaleX(0);
 	transform-origin: right center;
 	transition: all var(--floating-headings-animation-duration, 150ms)
 		ease-in-out;
@@ -70,12 +71,13 @@
 	);
 	right: unset;
 	transform-origin: left center;
+	transform: translateY(-50%) scaleX(0);
 }
 
 .floating-headings-expanded.visible {
 	pointer-events: auto;
 	opacity: 1;
-	transform: scaleX(1);
+	transform: translateY(-50%) scaleX(1);
 }
 
 .floating-heading-item {
@@ -85,8 +87,9 @@
 	font-size: var(--font-ui-smaller);
 	line-height: var(--line-height-tight);
 	color: var(--text-muted);
-	transition: background-color
-		var(--floating-headings-animation-duration, 150ms) ease-in-out;
+	border-radius: var(--radius-s);
+	transition: all var(--floating-headings-animation-duration, 150ms)
+		ease-in-out;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -98,7 +101,8 @@
 }
 
 .floating-heading-item.active {
-	color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+	color: var(--color-accent);
+	font-weight: var(--font-semibold);
 }
 
 /* Level-based indentation and font weights */
@@ -128,12 +132,15 @@
 }
 
 .floating-heading-line {
-	height: 3px;
+	height: var(--size-2-1);
 	background-color: var(--floating-headings-line-color, var(--text-muted));
-	margin-bottom: var(--size-2-3);
+	margin: 0;
+	border-radius: var(--radius-xs);
 	transition: all var(--floating-headings-animation-duration, 150ms)
 		ease-in-out;
 	transform-origin: right center;
+	opacity: 0.8;
+	flex-shrink: 0;
 }
 
 /* Level-based line widths */
@@ -163,4 +170,18 @@
 .theme-light .floating-headings-collapsed {
 	background-color: rgba(255, 255, 255, 0.95);
 	border-color: var(--border-color);
+}
+
+.theme-light .floating-headings-expanded {
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.floating-headings-container *,
+	.floating-headings-container *::before,
+	.floating-headings-container *::after {
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+		transition-duration: 0.01ms;
+	}
 }

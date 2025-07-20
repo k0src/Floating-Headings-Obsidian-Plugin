@@ -85,7 +85,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			.setDesc("Maximum height of the panel in pixels.")
 			.addSlider((slider) =>
 				slider
-					.setLimits(200, 800, 20)
+					.setLimits(100, 800, 20)
 					.setValue(this.plugin.settings.panelMaxHeight)
 					.setDynamicTooltip()
 					.onChange(async (value) => {

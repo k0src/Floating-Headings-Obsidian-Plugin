@@ -10,6 +10,9 @@ export class FloatingHeadingsUIManager {
 	private isHovered: boolean = false;
 	private hoverTimeout: number | null = null;
 
+	private expandedItemHeight: number = 0;
+	private expandedPadding: number = 0;
+
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
 	}
@@ -26,8 +29,31 @@ export class FloatingHeadingsUIManager {
 		parentElement.appendChild(this.containerElement);
 
 		this.updateCSSProperties();
+		this.calculateDimensionsFromStyles();
 		this.updateCollapsedView();
 		this.updateExpandedView();
+	}
+
+	/* Calcuate size of panel to set height of collasped panel */
+	private calculateDimensionsFromStyles() {
+		if (!this.expandedPanel || !this.containerElement) return;
+
+		const containerStyles = getComputedStyle(this.containerElement);
+
+		const size22 =
+			parseFloat(containerStyles.getPropertyValue("--size-2-2")) || 4;
+		const size42 =
+			parseFloat(containerStyles.getPropertyValue("--size-4-2")) || 8;
+		const fontSizeSmaller =
+			parseFloat(containerStyles.getPropertyValue("--font-ui-smaller")) ||
+			12;
+		const lineHeightTight =
+			parseFloat(
+				containerStyles.getPropertyValue("--line-height-tight")
+			) || 1.3;
+		this.expandedItemHeight =
+			size22 * 2 + fontSizeSmaller * lineHeightTight;
+		this.expandedPadding = size42 * 2;
 	}
 
 	private createContainer(): HTMLElement {
@@ -120,6 +146,13 @@ export class FloatingHeadingsUIManager {
 		);
 
 		const fittingHeadings = headings.slice(0, maxFittingLines);
+
+		const panelHeight = Math.min(
+			headings.length * this.expandedItemHeight + this.expandedPadding,
+			containerMaxHeight
+		);
+
+		this.collapsedSidebar.style.height = `${panelHeight}px`;
 
 		fittingHeadings.forEach((heading, index) => {
 			const line = this.createHeadingLine(heading, index);
