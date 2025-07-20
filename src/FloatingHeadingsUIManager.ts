@@ -91,6 +91,8 @@ export class FloatingHeadingsUIManager {
 
 		this.collapsedSidebar.classList.add("hovered");
 		this.expandedPanel.classList.add("visible");
+
+		this.updateActiveHeading();
 	}
 
 	private hideExpandedPanel() {
@@ -136,6 +138,8 @@ export class FloatingHeadingsUIManager {
 			const item = this.createExpandedHeadingItem(heading, index);
 			this.expandedPanel!.appendChild(item);
 		});
+
+		this.updateActiveHeading();
 	}
 
 	private createExpandedHeadingItem(
@@ -151,6 +155,7 @@ export class FloatingHeadingsUIManager {
 
 		item.addEventListener("click", () => {
 			this.scrollToHeading(heading);
+			this.setActiveHeading(index);
 		});
 
 		return item;
@@ -215,6 +220,130 @@ export class FloatingHeadingsUIManager {
 				);
 			}
 		}
+	}
+
+	private updateActiveHeading() {
+		if (!this.expandedPanel) return;
+
+		const markdownView = this.plugin.getActiveMarkdownView();
+		if (!markdownView) return;
+
+		const headings = this.plugin.getCurrentHeadings();
+		if (headings.length === 0) return;
+
+		const items = this.expandedPanel.querySelectorAll(
+			".floating-heading-item"
+		);
+		items.forEach((item) =>
+			(item as HTMLElement).classList.remove("active")
+		);
+
+		const closestHeading = this.findClosestHeading(markdownView, headings);
+		if (closestHeading !== null) {
+			const targetItem = Array.from(items).find(
+				(item, index) => index === closestHeading
+			);
+			if (targetItem) {
+				(targetItem as HTMLElement).classList.add("active");
+			}
+		}
+	}
+
+	private setActiveHeading(headingIndex: number) {
+		if (!this.expandedPanel) return;
+
+		const items = this.expandedPanel.querySelectorAll(
+			".floating-heading-item"
+		);
+
+		items.forEach((item) =>
+			(item as HTMLElement).classList.remove("active")
+		);
+
+		const targetItem = items[headingIndex];
+		if (targetItem) {
+			(targetItem as HTMLElement).classList.add("active");
+		}
+	}
+
+	private findClosestHeading(
+		markdownView: MarkdownView,
+		headings: HeadingInfo[]
+	): number | null {
+		const isReadingMode =
+			!markdownView.getMode || markdownView.getMode() === "preview";
+
+		if (isReadingMode) {
+			return this.findClosestHeadingInReadingMode(markdownView, headings);
+		} else {
+			return this.findClosestHeadingInEditMode(markdownView, headings);
+		}
+	}
+
+	private findClosestHeadingInEditMode(
+		markdownView: MarkdownView,
+		headings: HeadingInfo[]
+	): number | null {
+		const editor = markdownView.editor;
+		if (!editor) return null;
+
+		const cursor = editor.getCursor();
+		const currentLine = cursor.line;
+
+		let closestIndex = 0;
+		let closestDistance = Math.abs(headings[0].line - currentLine);
+
+		for (let i = 1; i < headings.length; i++) {
+			const distance = Math.abs(headings[i].line - currentLine);
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestIndex = i;
+			}
+		}
+
+		return closestIndex;
+	}
+
+	private findClosestHeadingInReadingMode(
+		markdownView: MarkdownView,
+		headings: HeadingInfo[]
+	): number | null {
+		const readingView = markdownView.containerEl.querySelector(
+			".markdown-reading-view"
+		);
+		if (!readingView) return null;
+
+		const scrollTop = readingView.scrollTop;
+		const viewportHeight = readingView.clientHeight;
+		const viewportCenter = scrollTop + viewportHeight / 2;
+
+		const headingElements = Array.from(
+			readingView.querySelectorAll<HTMLHeadingElement>(
+				"h1, h2, h3, h4, h5, h6"
+			)
+		);
+
+		let closestIndex = 0;
+		let closestDistance = Infinity;
+
+		for (let i = 0; i < headings.length; i++) {
+			const heading = headings[i];
+			const matchingElement = headingElements.find(
+				(el) => el.textContent?.trim() === heading.text.trim()
+			);
+
+			if (matchingElement) {
+				const elementTop = matchingElement.offsetTop;
+				const distance = Math.abs(elementTop - viewportCenter);
+
+				if (distance < closestDistance) {
+					closestDistance = distance;
+					closestIndex = i;
+				}
+			}
+		}
+
+		return headings.length > 0 ? closestIndex : null;
 	}
 
 	cleanup() {

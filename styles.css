@@ -97,6 +97,10 @@
 	color: var(--text-normal);
 }
 
+.floating-heading-item.active {
+	color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+}
+
 /* Level-based indentation and font weights */
 .floating-heading-item[data-level="1"] {
 	padding-left: var(--size-4-3);
