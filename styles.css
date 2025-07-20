@@ -81,7 +81,6 @@
 	font-size: var(--font-ui-smaller);
 	line-height: var(--line-height-tight);
 	color: var(--text-muted);
-	border-radius: var(--radius-s);
 	transition: background-color
 		var(--floating-headings-animation-duration, 150ms) ease-in-out;
 	white-space: nowrap;
