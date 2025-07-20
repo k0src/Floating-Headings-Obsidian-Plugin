@@ -66,8 +66,7 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ```
     # [[Some Page]]
     ```
--   **Extracted heading text:**  
-     `Some Page`
+-   **Extracted heading text:** `Some Page`
 
 **Span with link**
 
@@ -79,8 +78,7 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ```
     ## <span style="color:red">[[note]] Red Heading</span>
     ```
--   **Extracted heading text:**  
-     `Red Heading`
+-   **Extracted heading text:** `Red Heading`
 
 **Inline LaTeX**
 
@@ -92,8 +90,7 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ```
     ## $O^n$
     ```
--   **Extracted heading text:**  
-     `O^n`
+-   **Extracted heading text:** `O^n`
 
 **Bold heading**
 
@@ -105,8 +102,7 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ```
     ### **Bold Heading**
     ```
--   **Extracted heading text:**  
-     `Bold Heading`
+-   **Extracted heading text:** `Bold Heading`
 
 **List heading**
 
@@ -118,8 +114,7 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ```
     #### a. List Heading
     ```
--   **Extracted heading text:**  
-     `List Heading`
+-   **Extracted heading text:** `List Heading`
 
 ## Theming
 
