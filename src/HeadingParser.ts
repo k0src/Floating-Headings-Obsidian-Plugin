@@ -78,10 +78,11 @@ export class HeadingParser {
 	}
 
 	static stripHtmlTags(text: string): string {
-		const tempDiv = document.createElement("div");
-		tempDiv.innerHTML = text;
+		// Use DOMParser for safer HTML parsing
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(text, "text/html");
 
-		return tempDiv.textContent || tempDiv.innerText || text;
+		return doc.body.textContent || doc.body.innerText || text;
 	}
 
 	static filterHeadingsByLevel(

@@ -30,8 +30,7 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private createContainer(): HTMLElement {
-		const container = document.createElement("div");
-		container.className = "floating-headings-container";
+		const container = createDiv("floating-headings-container");
 
 		container.style.position = "absolute";
 		container.style.top = "50%";
@@ -44,8 +43,7 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private createCollapsedSidebar(): HTMLElement {
-		const sidebar = document.createElement("div");
-		sidebar.className = "floating-headings-collapsed";
+		const sidebar = createDiv("floating-headings-collapsed");
 
 		const settings = this.plugin.settings;
 		sidebar.style.width = `${settings.collapsedWidth}px`;
@@ -68,8 +66,7 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private createExpandedPanel(): HTMLElement {
-		const panel = document.createElement("div");
-		panel.className = "floating-headings-expanded";
+		const panel = createDiv("floating-headings-expanded");
 
 		const settings = this.plugin.settings;
 		panel.style.position = "absolute";
@@ -142,7 +139,7 @@ export class FloatingHeadingsUIManager {
 	updateCollapsedView() {
 		if (!this.collapsedSidebar) return;
 
-		this.collapsedSidebar.innerHTML = "";
+		this.collapsedSidebar.empty();
 
 		const headings = this.plugin.getCurrentHeadings();
 		const settings = this.plugin.settings;
@@ -167,7 +164,7 @@ export class FloatingHeadingsUIManager {
 	updateExpandedView() {
 		if (!this.expandedPanel) return;
 
-		this.expandedPanel.innerHTML = "";
+		this.expandedPanel.empty();
 
 		const headings = this.plugin.getCurrentHeadings();
 
@@ -181,8 +178,7 @@ export class FloatingHeadingsUIManager {
 		heading: HeadingInfo,
 		index: number
 	): HTMLElement {
-		const item = document.createElement("div");
-		item.className = "floating-heading-item";
+		const item = createDiv("floating-heading-item");
 
 		const settings = this.plugin.settings;
 
@@ -225,8 +221,7 @@ export class FloatingHeadingsUIManager {
 		heading: HeadingInfo,
 		index: number
 	): HTMLElement {
-		const line = document.createElement("div");
-		line.className = "floating-heading-line";
+		const line = createDiv("floating-heading-line");
 
 		const settings = this.plugin.settings;
 		const lineWidth = this.calculateLineWidth(heading.level);
