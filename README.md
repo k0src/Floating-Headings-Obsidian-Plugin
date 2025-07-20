@@ -161,3 +161,18 @@ Contributions are welcome. Please feel free to submit pull requests or create is
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## To-Do
+
+-   [x] Improved Regex support
+-   [ ] Animation styles
+-   [ ] Dynamic indentation
+-   [ ] Indent control
+-   [ ] Draw bullets and lines
+-   [ ] Collapsible heading groups
+-   [ ] Highlight headings when navigated to
+-   [ ] Filter input
+-   [ ] Lock open/close hotkey
+-   [ ] Per-note settings with YAML frontmatter
+-   [ ] Fix reading mode navigation
+-   [ ] Finalize styles
