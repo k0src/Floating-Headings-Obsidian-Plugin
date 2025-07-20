@@ -119,6 +119,7 @@ export class FloatingHeadingsUIManager {
 		this.expandedPanel.classList.add("visible");
 
 		this.updateActiveHeading();
+		this.applyScrollPosition();
 	}
 
 	private hideExpandedPanel() {
@@ -126,6 +127,52 @@ export class FloatingHeadingsUIManager {
 
 		this.collapsedSidebar.classList.remove("hovered");
 		this.expandedPanel.classList.remove("visible");
+	}
+
+	private applyScrollPosition() {
+		if (!this.expandedPanel) return;
+
+		const settings = this.plugin.settings;
+
+		switch (settings.panelScrollPosition) {
+			case "top":
+				this.expandedPanel.scrollTop = 0;
+				break;
+			case "previous":
+				break;
+			case "closest":
+				this.scrollToClosestHeader();
+				break;
+		}
+	}
+
+	private scrollToClosestHeader() {
+		if (!this.expandedPanel) return;
+
+		const markdownView = this.plugin.getActiveMarkdownView();
+		if (!markdownView) return;
+
+		const headings = this.plugin.getCurrentHeadings();
+		if (headings.length === 0) return;
+
+		const closestHeadingIndex = this.findClosestHeading(
+			markdownView,
+			headings
+		);
+		if (closestHeadingIndex === null) return;
+
+		const items = this.expandedPanel.querySelectorAll(
+			".floating-heading-item"
+		);
+		const targetItem = items[closestHeadingIndex] as HTMLElement;
+
+		if (targetItem) {
+			const panelHeight = this.expandedPanel.clientHeight;
+			const itemHeight = targetItem.offsetHeight;
+			const itemTop = targetItem.offsetTop;
+			const scrollPosition = itemTop - panelHeight / 2 + itemHeight / 2;
+			this.expandedPanel.scrollTop = Math.max(0, scrollPosition);
+		}
 	}
 
 	updateCollapsedView() {

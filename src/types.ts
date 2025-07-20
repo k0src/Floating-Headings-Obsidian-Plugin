@@ -17,6 +17,7 @@ export interface FloatingHeadingsSettings {
 	panelMaxHeight: number;
 	collapsedWidth: number;
 	lineThickness: number;
+	panelScrollPosition: "top" | "previous" | "closest";
 	parseHtmlElements: boolean;
 	useCustomRegex: boolean;
 	customRegex: string;
@@ -34,7 +35,8 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	panelWidth: 240,
 	panelMaxHeight: 400,
 	collapsedWidth: 16,
-	lineThickness: 3, // Default to --size-2-1 equivalent (3px)
+	lineThickness: 3,
+	panelScrollPosition: "previous",
 	parseHtmlElements: false,
 	useCustomRegex: false,
 	customRegex: "^(#{1,6})\\s+(.+)$",

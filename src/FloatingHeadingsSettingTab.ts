@@ -153,6 +153,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("Panel scroll position")
+			.setDesc("Postion of the expanded panel.")
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("top", "Set to top")
+					.addOption("previous", "Previous scroll position")
+					.addOption("closest", "Current header")
+					.setValue(this.plugin.settings.panelScrollPosition)
+					.onChange(async (value: "top" | "previous" | "closest") => {
+						this.plugin.settings.panelScrollPosition = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Panel background color")
 			.setDesc("Background color of the expanded panel.")
 			.addText((text) =>
