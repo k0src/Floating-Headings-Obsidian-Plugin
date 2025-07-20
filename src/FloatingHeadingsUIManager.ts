@@ -32,6 +32,11 @@ export class FloatingHeadingsUIManager {
 
 	private createContainer(): HTMLElement {
 		const container = createDiv("floating-headings-container");
+
+		if (this.plugin.settings.sidebarPosition === "left") {
+			container.addClass("position-left");
+		}
+
 		return container;
 	}
 
@@ -240,6 +245,11 @@ export class FloatingHeadingsUIManager {
 		if (!this.containerElement) return;
 
 		const settings = this.plugin.settings;
+
+		this.containerElement.classList.toggle(
+			"position-left",
+			settings.sidebarPosition === "left"
+		);
 
 		this.containerElement.style.setProperty(
 			"--floating-headings-collapsed-width",

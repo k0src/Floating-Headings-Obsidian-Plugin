@@ -9,6 +9,11 @@
 	pointer-events: auto;
 }
 
+.floating-headings-container.position-left {
+	left: var(--size-4-5);
+	right: unset;
+}
+
 .floating-headings-collapsed {
 	display: flex;
 	flex-direction: column;
@@ -53,6 +58,14 @@
 	right: calc(
 		var(--floating-headings-collapsed-width, 16px) + var(--size-2-3)
 	);
+}
+
+.floating-headings-container.position-left .floating-headings-expanded {
+	left: calc(
+		var(--floating-headings-collapsed-width, 16px) + var(--size-2-3)
+	);
+	right: unset;
+	transform-origin: left center;
 }
 
 .floating-headings-expanded.visible {

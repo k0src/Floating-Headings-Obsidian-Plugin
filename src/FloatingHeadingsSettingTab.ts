@@ -36,6 +36,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("Sidebar position")
+			.setDesc("Choose which side of the screen the sidebar appears on.")
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("right", "Right")
+					.addOption("left", "Left")
+					.setValue(this.plugin.settings.sidebarPosition)
+					.onChange(async (value: "left" | "right") => {
+						this.plugin.settings.sidebarPosition = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui.refresh();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Maximum heading level")
 			.setDesc("Only show headings up to this level (1-6).")
 			.addSlider((slider) =>

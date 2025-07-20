@@ -11,6 +11,7 @@ export interface FloatingHeadingsSettings {
 	hoverColor: string;
 	panelBackgroundColor: string;
 	animationDuration: number;
+	sidebarPosition: "left" | "right";
 	maxHeadingLevel: number;
 	panelWidth: number;
 	panelMaxHeight: number;
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	hoverColor: "var(--text-accent)",
 	panelBackgroundColor: "",
 	animationDuration: 150,
+	sidebarPosition: "right",
 	maxHeadingLevel: 6,
 	panelWidth: 240,
 	panelMaxHeight: 400,
