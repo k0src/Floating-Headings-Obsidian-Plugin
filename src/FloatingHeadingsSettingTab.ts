@@ -129,12 +129,24 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			.setName("Line color")
 			.setDesc("Color of the collapsed heading lines.")
 			.addText((text) =>
-				text
-					.setPlaceholder("#DADADA")
-					.setValue(this.plugin.settings.collapsedLineColor)
+				text.setPlaceholder("#DADADA").onChange(async (value) => {
+					this.plugin.settings.collapsedLineColor =
+						value || "var(--text-muted)";
+					await this.plugin.saveSettings();
+					this.plugin.ui?.refresh();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName("Line thickness")
+			.setDesc("Thickness of the collapsed heading lines in pixels.")
+			.addSlider((slider) =>
+				slider
+					.setLimits(1, 8, 1)
+					.setValue(this.plugin.settings.lineThickness)
+					.setDynamicTooltip()
 					.onChange(async (value) => {
-						this.plugin.settings.collapsedLineColor =
-							value || "var(--text-muted)";
+						this.plugin.settings.lineThickness = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 					})
@@ -144,15 +156,12 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			.setName("Panel background color")
 			.setDesc("Background color of the expanded panel.")
 			.addText((text) =>
-				text
-					.setPlaceholder("#1E1E1E")
-					.setValue(this.plugin.settings.panelBackgroundColor)
-					.onChange(async (value) => {
-						this.plugin.settings.panelBackgroundColor =
-							value || "var(--background-primary)";
-						await this.plugin.saveSettings();
-						this.plugin.ui?.refresh();
-					})
+				text.setPlaceholder("#1E1E1E").onChange(async (value) => {
+					this.plugin.settings.panelBackgroundColor =
+						value || "var(--background-primary)";
+					await this.plugin.saveSettings();
+					this.plugin.ui?.refresh();
+				})
 			);
 
 		new Setting(containerEl).setName("Advanced").setHeading();

@@ -443,5 +443,10 @@ export class FloatingHeadingsUIManager {
 				settings.collapsedLineColor
 			);
 		}
+
+		this.containerElement.style.setProperty(
+			"--floating-headings-line-thickness",
+			`${settings.lineThickness}px`
+		);
 	}
 }

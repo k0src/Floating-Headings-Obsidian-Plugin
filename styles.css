@@ -132,10 +132,10 @@
 }
 
 .floating-heading-line {
-	height: var(--size-2-1);
+	height: var(--floating-headings-line-thickness, var(--size-2-1));
 	background-color: var(--floating-headings-line-color, var(--text-muted));
 	margin: 0;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-s);
 	transition: all var(--floating-headings-animation-duration, 150ms)
 		ease-in-out;
 	transform-origin: right center;
