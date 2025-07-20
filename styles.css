@@ -31,6 +31,10 @@
 	max-height: var(--floating-headings-panel-max-height, 400px);
 }
 
+.floating-headings-container.position-left .floating-headings-collapsed {
+	align-items: flex-start;
+}
+
 .floating-headings-collapsed.hovered {
 	opacity: 0.9;
 }
@@ -146,6 +150,10 @@
 }
 .floating-heading-line[data-level="6"] {
 	width: 25%;
+}
+
+.floating-headings-container.position-left .floating-heading-line {
+	transform-origin: left center;
 }
 
 .theme-light .floating-headings-collapsed {
