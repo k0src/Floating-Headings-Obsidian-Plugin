@@ -56,26 +56,78 @@ Custom Regex patterns can be used to parse and extract heading text from headers
 
 #### Custom Regex Examples
 
--   **Link heading**:
-    -   Regex pattern: `/^(#{1,6})\s+\[\[(?<heading_text>[^\]]+)\]\]\s*$/;`
-    -   Example match: `# [[Some Page]]`
-    -   Heading text: `Some Page`
--   **Span with link**:
-    -   Regex pattern: `/^(#{1,6})\s+<span[^>]*>\[\[.*?\]\]\s+(?<heading_text>.*?)<\/span>$/;`
-    -   Example match: `## <span style="color:red">[[note]] Red Heading</span>`
-    -   Heading text: `Red Heading`
--   **Inline latex**:
-    -   Regex pattern: `/^(#{1,6})\s+\$(?<heading_text>[^$]+)\$\s*$/;`
-    -   Example match: `## $O^n$`
-    -   Heading text: `O^n`
--   **Bold heading**:
-    -   Regex pattern: `/^(#{1,6})\s+\*\*(?<heading_text>.+?)\*\*\s*$/;`
-    -   Example match: `### **Bold Heading**`
-    -   Heading text: `Bold Heading`
--   **List heading**:
-    -   Regex pattern: `/^(#{1,6})\s+[a-zA-Z]\.\s+(?<heading_text>.+)$/;`
-    -   Example match: `#### a. List Heading`
-    -   Heading text: `List Heading`
+**Link heading**
+
+-   **Regex pattern:**
+    ```regex
+    /^(#{1,6})\s+\[\[(?<heading_text>[^\]]+)\]\]\s*$/
+    ```
+-   **Example match:**
+    ```
+    # [[Some Page]]
+    ```
+-   **Extracted heading text:**  
+     `Some Page`
+
+---
+
+**Span with link**
+
+-   **Regex pattern:**
+    ```regex
+    /^(#{1,6})\s+<span[^>]*>\[\[.*?\]\]\s+(?<heading_text>.*?)<\/span>$/
+    ```
+-   **Example match:**
+    ```
+    ## <span style="color:red">[[note]] Red Heading</span>
+    ```
+-   **Extracted heading text:**  
+     `Red Heading`
+
+---
+
+**Inline LaTeX**
+
+-   **Regex pattern:**
+    ```regex
+    /^(#{1,6})\s+\$(?<heading_text>[^$]+)\$\s*$/
+    ```
+-   **Example match:**
+    ```
+    ## $O^n$
+    ```
+-   **Extracted heading text:**  
+     `O^n`
+
+---
+
+**Bold heading**
+
+-   **Regex pattern:**
+    ```regex
+    /^(#{1,6})\s+\*\*(?<heading_text>.+?)\*\*\s*$/
+    ```
+-   **Example match:**
+    ```
+    ### **Bold Heading**
+    ```
+-   **Extracted heading text:**  
+     `Bold Heading`
+
+---
+
+**List heading**
+
+-   **Regex pattern:**
+    ```regex
+    /^(#{1,6})\s+[a-zA-Z]\.\s+(?<heading_text>.+)$/
+    ```
+-   **Example match:**
+    ```
+    #### a. List Heading
+    ```
+-   **Extracted heading text:**  
+     `List Heading`
 
 ## Theming
 
