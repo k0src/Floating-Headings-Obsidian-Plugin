@@ -1,7 +1,7 @@
 {
 	"id": "floating-headings",
 	"name": "Floating Headings",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"minAppVersion": "0.15.0",
 	"description": "Displays a floating, collapsible outline of a note's headings on the right side of the editor. Expands on hover, click to navigate.",
 	"author": "k0src",
