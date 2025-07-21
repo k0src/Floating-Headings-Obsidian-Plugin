@@ -2,7 +2,7 @@
 	user-select: none;
 	font-family: var(--font-interface);
 	position: absolute;
-	top: 50%;
+	top: var(--floating-headings-vertical-position, 50%);
 	right: var(--size-4-5);
 	transform: translateY(-50%);
 	z-index: var(--layer-popover);

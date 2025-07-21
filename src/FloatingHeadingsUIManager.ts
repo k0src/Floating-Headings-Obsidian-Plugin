@@ -477,6 +477,10 @@ export class FloatingHeadingsUIManager {
 			"--floating-headings-animation-duration",
 			`${settings.animationDuration}ms`
 		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-vertical-position",
+			`${100 - settings.verticalPosition}%`
+		);
 
 		if (settings.panelBackgroundColor) {
 			this.containerElement.style.setProperty(

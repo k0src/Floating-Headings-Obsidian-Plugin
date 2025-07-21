@@ -36,6 +36,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("Vertical position")
+			.setDesc("Vertical position of the panel (0%-100%).")
+			.addSlider((slider) =>
+				slider
+					.setLimits(0, 100, 5)
+					.setValue(this.plugin.settings.verticalPosition)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.verticalPosition = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Sidebar position")
 			.setDesc("Choose which side of the screen the sidebar appears on.")
 			.addDropdown((dropdown) =>
