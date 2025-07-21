@@ -31,6 +31,7 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 ### General Settings
 
 -   **Enable plugin**: Toggle the plugin on/off
+-   **Vertical position**: Vertical position of the sidebar panel.
 -   **Maximum heading level**: Filter headings by level
 -   **Sidebar position**: Choose which side of the screen the sidebar appears on.
 
