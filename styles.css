@@ -32,6 +32,10 @@
 	width: var(--floating-headings-collapsed-width, 16px);
 }
 
+.floating-headings-collapsed.hidden {
+	display: none;
+}
+
 .floating-headings-container.position-left .floating-headings-collapsed {
 	align-items: flex-start;
 }

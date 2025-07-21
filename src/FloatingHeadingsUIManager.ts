@@ -184,6 +184,13 @@ export class FloatingHeadingsUIManager {
 		const headings = this.plugin.getCurrentHeadings();
 		const settings = this.plugin.settings;
 
+		if (headings.length === 0) {
+			this.collapsedSidebar.classList.add("hidden");
+			return;
+		}
+
+		this.collapsedSidebar.classList.remove("hidden");
+
 		const containerMaxHeight = settings.panelMaxHeight;
 		const lineHeight = 3;
 		const lineMargin = 6;
