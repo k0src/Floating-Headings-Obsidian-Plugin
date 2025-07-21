@@ -4,21 +4,21 @@ An Obsidian plugin that displays a floating, collapsible outline of your note's 
 
 ## Features
 
--   **Collapsed sidebar**: Shows visual indicators for each heading as different sized lines
--   **Hover to expand**: Full heading text appears in a panel
--   **Click to navigate**: Jump directly to any heading in your document
--   **Heading level filtering**: Choose which heading levels to display (H1-H6)
--   **Visual customization**: Customize colors, panel size, and animation speed
--   **HTML parsing**: Option to parse HTML heading elements
--   **Custom parsing**: Support for custom regex patterns to parse non-standard headings
+-   **Collapsed sidebar**: Shows visual indicators for each heading as different sized lines.
+-   **Hover to expand**: Full heading text appears in a panel.
+-   **Click to navigate**: Jump directly to any heading in your document.
+-   **Heading level filtering**: Choose which heading levels to display (H1-H6).
+-   **Visual customization**: Customize colors, panel size, and animation speed.
+-   **HTML parsing**: Option to parse HTML heading elements.
+-   **Custom parsing**: Support for custom regex patterns to parse non-standard headings.
 
 ## Installation
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/k0src/Floating-Headings-Obsidian-Plugin/releases)
-2. Extract the files to your vault's `.obsidian/plugins/floating-headings/` folder
-3. Enable the plugin in Obsidian's Community Plugins settings
+1. Download the latest release from the [releases page](https://github.com/k0src/Floating-Headings-Obsidian-Plugin/releases).
+2. Extract the files to your vault's `.obsidian/plugins/floating-headings/` folder.
+3. Enable the plugin in Obsidian's Community Plugins settings.
 
 ### From Obsidian Community Plugins
 
@@ -30,26 +30,26 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 
 ### General Settings
 
--   **Enable plugin**: Toggle the plugin on/off
+-   **Enable plugin**: Toggle the plugin on/off.
 -   **Vertical position**: Vertical position of the sidebar panel.
--   **Maximum heading level**: Filter headings by level
+-   **Maximum heading level**: Filter headings by level.
 -   **Sidebar position**: Choose which side of the screen the sidebar appears on.
 
 ### Visual Customization
 
--   **Panel width**: Adjust the expanded panel width
--   **Panel max height**: Set maximum height for the panel
+-   **Panel width**: Adjust the expanded panel width.
+-   **Panel max height**: Set maximum height for the panel.
 -   **Collapsed width**: Width of the collapsed sidebar
--   **Animation duration**: Control transition speed
+-   **Animation duration**: Control transition speed.
 -   **Line thickness**: Set the thickness of the collasped heading lines.
 -   **Panel scroll position**: Change the scroll position of the panel when opened. Can be set to the top of the panel, the current header, or the previous scroll position.
--   **Panel background color**: Custom background color
--   **Collapsed line color**: Color for heading indicators
+-   **Panel background color**: Custom background color.
+-   **Collapsed line color**: Color for heading indicators.
 
 ### Advanced Settings
 
 -   **Parse HTML elements**: Enable parsing of HTML heading tags
--   **Custom regex pattern**: Define your own heading detection pattern
+-   **Custom regex pattern**: Define your own heading detection pattern.
 
 ### Custom Regex
 
@@ -123,25 +123,25 @@ Custom Regex patterns can be used to parse and extract heading text from headers
 
 The plugin uses Obsidian's built-in CSS variables for consistent theming:
 
--   `--text-normal`: Heading text color
--   `--text-muted`: Collapsed line indicators and vertical lines
--   `--text-accent`: Active heading highlight color
--   `--background-primary`: Panel background (fallback)
--   `--background-modifier-border`: Panel border
--   `--background-modifier-hover`: Hover effects
--   `--color-accent`: Active heading color
+-   `--text-normal`: Heading text color.
+-   `--text-muted`: Collapsed line indicators and vertical lines.
+-   `--text-accent`: Active heading highlight color.
+-   `--background-primary`: Panel background (fallback).
+-   `--background-modifier-border`: Panel border.
+-   `--background-modifier-hover`: Hover effects.
+-   `--color-accent`: Active heading color.
 
 ### Plugin-Specific CSS Variables
 
 Override these custom properties to change the appearance of the plugin:
 
--   `--floating-headings-collapsed-width`: Width of the collapsed sidebar (default: 16px)
--   `--floating-headings-panel-width`: Width of the expanded panel (default: 240px)
--   `--floating-headings-panel-max-height`: Maximum height of the panel (default: 400px)
--   `--floating-headings-panel-bg`: Custom panel background color
--   `--floating-headings-line-color`: Color of collapsed heading lines
--   `--floating-headings-line-thickness`: Thickness of collapsed heading lines (default: 3px)
--   `--floating-headings-animation-duration`: Animation speed in milliseconds (default: 150ms)
+-   `--floating-headings-collapsed-width`: Width of the collapsed sidebar (default: 16px).
+-   `--floating-headings-panel-width`: Width of the expanded panel (default: 240px).
+-   `--floating-headings-panel-max-height`: Maximum height of the panel (default: 400px).
+-   `--floating-headings-panel-bg`: Custom panel background color.
+-   `--floating-headings-line-color`: Color of collapsed heading lines.
+-   `--floating-headings-line-thickness`: Thickness of collapsed heading lines (default: 3px).
+-   `--floating-headings-animation-duration`: Animation speed in milliseconds (default: 150ms).
 
 ### Custom CSS
 
@@ -193,10 +193,10 @@ Contributions are welcome. Please feel free to submit pull requests or create is
 
 ### Development Setup
 
-1. Clone the repository
-2. Run `npm install` to install dependencies
-3. Run `npm run dev` for development mode
-4. Run `npm run build` for production build
+1. Clone the repository.
+2. Run `npm install` to install dependencies.
+3. Run `npm run dev` for development mode.
+4. Run `npm run build` for production build.
 
 ## License
 
