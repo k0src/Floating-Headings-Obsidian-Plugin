@@ -8,6 +8,7 @@ export class FloatingHeadingsUIManager {
 	private collapsedSidebar: HTMLElement | null = null;
 	private expandedPanel: HTMLElement | null = null;
 	private isHovered: boolean = false;
+	private isExpanded: boolean = false; // Track if panel is currently expanded
 	private hoverTimeout: number | null = null;
 
 	private expandedItemHeight: number = 0;
@@ -23,6 +24,7 @@ export class FloatingHeadingsUIManager {
 		this.containerElement = this.createContainer();
 		this.collapsedSidebar = this.createCollapsedSidebar();
 		this.expandedPanel = this.createExpandedPanel();
+		this.isExpanded = false; // Initialize as collapsed
 
 		this.containerElement.appendChild(this.collapsedSidebar);
 		this.containerElement.appendChild(this.expandedPanel);
@@ -115,11 +117,18 @@ export class FloatingHeadingsUIManager {
 	private showExpandedPanel() {
 		if (!this.expandedPanel || !this.collapsedSidebar) return;
 
+		const wasExpanded = this.isExpanded;
+
 		this.collapsedSidebar.classList.add("hovered");
 		this.expandedPanel.classList.add("visible");
+		this.isExpanded = true;
 
 		this.updateActiveHeading();
-		this.applyScrollPosition();
+
+		// Only apply scroll position if panel was not already expanded
+		if (!wasExpanded) {
+			this.applyScrollPosition();
+		}
 	}
 
 	private hideExpandedPanel() {
@@ -127,6 +136,7 @@ export class FloatingHeadingsUIManager {
 
 		this.collapsedSidebar.classList.remove("hovered");
 		this.expandedPanel.classList.remove("visible");
+		this.isExpanded = false;
 	}
 
 	private applyScrollPosition() {
@@ -419,6 +429,7 @@ export class FloatingHeadingsUIManager {
 		this.collapsedSidebar = null;
 		this.expandedPanel = null;
 		this.isHovered = false;
+		this.isExpanded = false;
 	}
 
 	refresh() {
