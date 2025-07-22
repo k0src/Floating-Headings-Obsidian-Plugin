@@ -55,7 +55,7 @@
 	border: var(--border-width) solid var(--background-modifier-border);
 	border-radius: var(--radius-m);
 	overflow-y: auto;
-	padding: var(--size-4-2) 0;
+	padding: var(--size-4-2);
 	opacity: 0;
 	transform-origin: right center;
 	transition: all var(--floating-headings-animation-duration, 150ms)

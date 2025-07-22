@@ -36,17 +36,16 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Vertical position")
-			.setDesc("Vertical position of the panel (0%-100%).")
-			.addSlider((slider) =>
-				slider
-					.setLimits(0, 100, 5)
-					.setValue(this.plugin.settings.verticalPosition)
-					.setDynamicTooltip()
+			.setName("Hide panel on navigation")
+			.setDesc(
+				"Hide the expanded panel after clicking on a heading to navigate."
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.hidePanelOnNavigation)
 					.onChange(async (value) => {
-						this.plugin.settings.verticalPosition = value;
+						this.plugin.settings.hidePanelOnNavigation = value;
 						await this.plugin.saveSettings();
-						this.plugin.ui?.refresh();
 					})
 			);
 
@@ -66,6 +65,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("Vertical position")
+			.setDesc("Vertical position of the sidebar (0%-100%).")
+			.addSlider((slider) =>
+				slider
+					.setLimits(0, 100, 5)
+					.setValue(this.plugin.settings.verticalPosition)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.verticalPosition = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Maximum heading level")
 			.setDesc("Only show headings up to this level (1-6).")
 			.addSlider((slider) =>
@@ -77,6 +91,23 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.maxHeadingLevel = value;
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
+					})
+			);
+
+		new Setting(containerEl).setName("Visual customization").setHeading();
+
+		new Setting(containerEl)
+			.setName("Panel max height")
+			.setDesc("Maximum height of the panel in pixels.")
+			.addSlider((slider) =>
+				slider
+					.setLimits(100, 800, 20)
+					.setValue(this.plugin.settings.panelMaxHeight)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.panelMaxHeight = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
 					})
 			);
 
@@ -96,22 +127,22 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Panel max height")
-			.setDesc("Maximum height of the panel in pixels.")
-			.addSlider((slider) =>
-				slider
-					.setLimits(100, 800, 20)
-					.setValue(this.plugin.settings.panelMaxHeight)
-					.setDynamicTooltip()
-					.onChange(async (value) => {
-						this.plugin.settings.panelMaxHeight = value;
+			.setName("Panel scroll position")
+			.setDesc("Scroll position of the expanded panel.")
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("top", "Set to top")
+					.addOption("previous", "Previous scroll position")
+					.addOption("closest", "Current header")
+					.setValue(this.plugin.settings.panelScrollPosition)
+					.onChange(async (value: "top" | "previous" | "closest") => {
+						this.plugin.settings.panelScrollPosition = value;
 						await this.plugin.saveSettings();
-						this.plugin.ui?.refresh();
 					})
 			);
 
 		new Setting(containerEl)
-			.setName("Collapsed sidebar width")
+			.setName("Sidebar width")
 			.setDesc("Width of the collapsed sidebar in pixels.")
 			.addSlider((slider) =>
 				slider
@@ -120,6 +151,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					.setDynamicTooltip()
 					.onChange(async (value) => {
 						this.plugin.settings.collapsedWidth = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Sidebar line thickness")
+			.setDesc("Thickness of the collapsed heading lines in pixels.")
+			.addSlider((slider) =>
+				slider
+					.setLimits(1, 8, 1)
+					.setValue(this.plugin.settings.lineThickness)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.lineThickness = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 					})
@@ -140,60 +186,6 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					})
 			);
 
-		new Setting(containerEl)
-			.setName("Line color")
-			.setDesc("Color of the collapsed heading lines.")
-			.addText((text) =>
-				text.setPlaceholder("#DADADA").onChange(async (value) => {
-					this.plugin.settings.collapsedLineColor =
-						value || "var(--text-muted)";
-					await this.plugin.saveSettings();
-					this.plugin.ui?.refresh();
-				})
-			);
-
-		new Setting(containerEl)
-			.setName("Line thickness")
-			.setDesc("Thickness of the collapsed heading lines in pixels.")
-			.addSlider((slider) =>
-				slider
-					.setLimits(1, 8, 1)
-					.setValue(this.plugin.settings.lineThickness)
-					.setDynamicTooltip()
-					.onChange(async (value) => {
-						this.plugin.settings.lineThickness = value;
-						await this.plugin.saveSettings();
-						this.plugin.ui?.refresh();
-					})
-			);
-
-		new Setting(containerEl)
-			.setName("Panel scroll position")
-			.setDesc("Postion of the expanded panel.")
-			.addDropdown((dropdown) =>
-				dropdown
-					.addOption("top", "Set to top")
-					.addOption("previous", "Previous scroll position")
-					.addOption("closest", "Current header")
-					.setValue(this.plugin.settings.panelScrollPosition)
-					.onChange(async (value: "top" | "previous" | "closest") => {
-						this.plugin.settings.panelScrollPosition = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(containerEl)
-			.setName("Panel background color")
-			.setDesc("Background color of the expanded panel.")
-			.addText((text) =>
-				text.setPlaceholder("#1E1E1E").onChange(async (value) => {
-					this.plugin.settings.panelBackgroundColor =
-						value || "var(--background-primary)";
-					await this.plugin.saveSettings();
-					this.plugin.ui?.refresh();
-				})
-			);
-
 		new Setting(containerEl).setName("Advanced").setHeading();
 
 		new Setting(containerEl)
@@ -206,8 +198,13 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.parseHtmlElements)
 					.onChange(async (value) => {
 						this.plugin.settings.parseHtmlElements = value;
+						// If HTML parsing enabled, disable custom regex
+						if (value && this.plugin.settings.useCustomRegex) {
+							this.plugin.settings.useCustomRegex = false;
+						}
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
+						this.display();
 					})
 			);
 
@@ -221,6 +218,10 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.useCustomRegex)
 					.onChange(async (value) => {
 						this.plugin.settings.useCustomRegex = value;
+						// If custom regex enabled, disable HTML parsing
+						if (value && this.plugin.settings.parseHtmlElements) {
+							this.plugin.settings.parseHtmlElements = false;
+						}
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();

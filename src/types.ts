@@ -8,9 +8,7 @@ export interface FloatingHeadingsSettings {
 	enabled: boolean;
 	verticalPosition: number;
 	maxHeadingsInCollapsed: number;
-	collapsedLineColor: string;
 	hoverColor: string;
-	panelBackgroundColor: string;
 	animationDuration: number;
 	sidebarPosition: "left" | "right";
 	maxHeadingLevel: number;
@@ -22,15 +20,14 @@ export interface FloatingHeadingsSettings {
 	parseHtmlElements: boolean;
 	useCustomRegex: boolean;
 	customRegex: string;
+	hidePanelOnNavigation: boolean;
 }
 
 export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	enabled: true,
 	verticalPosition: 50,
 	maxHeadingsInCollapsed: 25,
-	collapsedLineColor: "",
 	hoverColor: "var(--text-accent)",
-	panelBackgroundColor: "",
 	animationDuration: 150,
 	sidebarPosition: "right",
 	maxHeadingLevel: 6,
@@ -43,4 +40,5 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	useCustomRegex: false,
 	//prettier-ignore
 	customRegex: "/^(#{1,6})\s+(.+)$/m",
+	hidePanelOnNavigation: false,
 };

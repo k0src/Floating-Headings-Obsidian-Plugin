@@ -1,5 +1,3 @@
-// fix css and creating els https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines
-
 import { Plugin, MarkdownView, WorkspaceLeaf, TFile } from "obsidian";
 
 import {
@@ -15,6 +13,11 @@ export default class FloatingHeadingsPlugin extends Plugin {
 	settings: FloatingHeadingsSettings;
 	private currentHeadings: HeadingInfo[] = [];
 	private activeMarkdownView: MarkdownView | null = null;
+	private currentMode: string | null = null;
+	private headingsCache: Map<
+		string,
+		{ headings: HeadingInfo[]; timestamp: number }
+	> = new Map();
 	ui: FloatingHeadingsUIManager;
 
 	async onload() {
@@ -29,6 +32,12 @@ export default class FloatingHeadingsPlugin extends Plugin {
 				"active-leaf-change",
 				this.onActiveLeafChange.bind(this)
 			)
+		);
+
+		this.registerEvent(
+			this.app.metadataCache.on("changed", () => {
+				this.handleMetadataChanged();
+			})
 		);
 
 		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
@@ -58,17 +67,20 @@ export default class FloatingHeadingsPlugin extends Plugin {
 
 		if (!leaf || !this.settings.enabled) {
 			this.activeMarkdownView = null;
+			this.currentMode = null;
 			return;
 		}
 
 		const view = leaf.view;
 		if (view instanceof MarkdownView) {
 			this.activeMarkdownView = view;
+			this.currentMode = view.getMode?.() || null;
 			this.setupMarkdownViewListeners();
 			this.updateHeadings();
 			this.mountUI();
 		} else {
 			this.activeMarkdownView = null;
+			this.currentMode = null;
 		}
 	}
 
@@ -100,11 +112,24 @@ export default class FloatingHeadingsPlugin extends Plugin {
 				}, 100);
 			})
 		);
+
+		this.registerEvent(
+			this.app.workspace.on("layout-change", () => {
+				if (this.activeMarkdownView) {
+					const newMode = this.activeMarkdownView.getMode?.() || null;
+					if (newMode !== this.currentMode) {
+						this.currentMode = newMode;
+						this.updateHeadings();
+					}
+				}
+			})
+		);
 	}
 
 	private onEditorChange() {
 		clearTimeout((this as any).updateTimeout);
 		(this as any).updateTimeout = setTimeout(() => {
+			this.headingsCache.clear();
 			this.updateHeadings();
 		}, 150);
 	}
@@ -112,6 +137,7 @@ export default class FloatingHeadingsPlugin extends Plugin {
 	private onFileModified() {
 		clearTimeout((this as any).fileUpdateTimeout);
 		(this as any).fileUpdateTimeout = setTimeout(() => {
+			this.headingsCache.clear();
 			this.updateHeadings();
 		}, 300);
 	}
@@ -122,26 +148,114 @@ export default class FloatingHeadingsPlugin extends Plugin {
 			return;
 		}
 
+		const file = this.activeMarkdownView.file;
+		if (!file) return;
+
+		// Check cache first
+		const cacheKey = file.path + "_" + file.stat.mtime;
+		const cached = this.headingsCache.get(cacheKey);
+		if (cached && Date.now() - cached.timestamp < 1000) {
+			// Cache for 1 second
+			this.currentHeadings = cached.headings;
+			if (this.ui) {
+				this.ui.refresh();
+			}
+			return;
+		}
+
+		// If custom regex is enabled, we need to read content directly
+		if (this.settings.useCustomRegex && this.settings.customRegex) {
+			this.app.vault.cachedRead(file).then((content) => {
+				this.processCustomRegexHeadings(content, cacheKey);
+			});
+			return;
+		}
+
+		// Use metadata cache for standard heading parsing
+		const metadataHeadings = HeadingParser.getHeadingsFromCache(
+			this,
+			this.activeMarkdownView
+		);
+
+		if (metadataHeadings.length > 0) {
+			const filteredHeadings = HeadingParser.filterHeadingsByLevel(
+				metadataHeadings,
+				this.settings.maxHeadingLevel
+			);
+			this.currentHeadings = filteredHeadings;
+
+			// Update cache
+			this.headingsCache.set(cacheKey, {
+				headings: filteredHeadings,
+				timestamp: Date.now(),
+			});
+		} else {
+			this.fallbackToContentParsing();
+		}
+
+		// Clean old cache entries
+		if (this.headingsCache.size > 10) {
+			const oldestKey = this.headingsCache.keys().next().value;
+			this.headingsCache.delete(oldestKey);
+		}
+
+		if (this.ui) {
+			this.ui.refresh();
+		}
+	}
+
+	private processCustomRegexHeadings(content: string, cacheKey: string) {
+		const allHeadings = HeadingParser.parseHeadings(
+			content,
+			this.settings.parseHtmlElements,
+			this.settings.useCustomRegex,
+			this.settings.customRegex
+		);
+		const filteredHeadings = HeadingParser.filterHeadingsByLevel(
+			allHeadings,
+			this.settings.maxHeadingLevel
+		);
+
+		this.currentHeadings = filteredHeadings;
+
+		// Update cache
+		this.headingsCache.set(cacheKey, {
+			headings: filteredHeadings,
+			timestamp: Date.now(),
+		});
+
+		// Clean old cache entries
+		if (this.headingsCache.size > 10) {
+			const oldestKey = this.headingsCache.keys().next().value;
+			this.headingsCache.delete(oldestKey);
+		}
+
+		if (this.ui) {
+			this.ui.refresh();
+		}
+	}
+
+	private fallbackToContentParsing() {
 		let content = "";
-		const editor = this.activeMarkdownView.editor;
+		const editor = this.activeMarkdownView?.editor;
 
 		if (editor) {
 			content = editor.getValue();
 		} else {
-			const file = this.activeMarkdownView.file;
+			const file = this.activeMarkdownView?.file;
 			if (file) {
 				this.app.vault.cachedRead(file).then((fileContent) => {
 					content = fileContent;
-					this.processHeadings(content);
+					this.processHeadingsFromContent(content);
 				});
 				return;
 			}
 		}
 
-		this.processHeadings(content);
+		this.processHeadingsFromContent(content);
 	}
 
-	private processHeadings(content: string) {
+	private processHeadingsFromContent(content: string) {
 		const allHeadings = HeadingParser.parseHeadings(
 			content,
 			this.settings.parseHtmlElements,
@@ -160,12 +274,17 @@ export default class FloatingHeadingsPlugin extends Plugin {
 		}
 	}
 
+	private handleMetadataChanged() {
+		if (this.activeMarkdownView) {
+			this.headingsCache.clear();
+			this.updateHeadings();
+		}
+	}
+
 	private mountUI() {
 		if (!this.activeMarkdownView || !this.ui) return;
 
-		const isReadingMode =
-			!this.activeMarkdownView.getMode ||
-			this.activeMarkdownView.getMode() === "preview";
+		const isReadingMode = this.isReadingMode();
 
 		let targetContainer: HTMLElement | null = null;
 
@@ -211,5 +330,13 @@ export default class FloatingHeadingsPlugin extends Plugin {
 
 	getActiveMarkdownView(): MarkdownView | null {
 		return this.activeMarkdownView;
+	}
+
+	getCurrentMode(): string | null {
+		return this.currentMode;
+	}
+
+	isReadingMode(): boolean {
+		return this.currentMode === "preview" || !this.currentMode;
 	}
 }

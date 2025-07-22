@@ -264,49 +264,22 @@ export class FloatingHeadingsUIManager {
 		const markdownView = this.plugin.getActiveMarkdownView();
 		if (!markdownView) return;
 
-		const isReadingMode =
-			!markdownView.getMode || markdownView.getMode() === "preview";
+		const file = markdownView.file;
+		if (!file) return;
 
-		if (isReadingMode) {
-			const readingView = markdownView.containerEl.querySelector(
-				".markdown-reading-view"
-			);
+		markdownView.leaf.openFile(file, {
+			eState: { line: heading.line },
+		});
 
-			if (!readingView) return;
-
-			setTimeout(() => {
-				const headingSelectors = ["h1", "h2", "h3", "h4", "h5", "h6"];
-				const headingElements = Array.from(
-					readingView.querySelectorAll<HTMLHeadingElement>(
-						headingSelectors.join(", ")
-					)
-				);
-
-				const matchText = heading.text.trim();
-
-				for (const el of headingElements) {
-					const elText = el.textContent?.trim();
-					if (elText === matchText) {
-						el.scrollIntoView({
-							behavior: "smooth",
-							block: "start",
-						});
-						return;
-					}
-				}
-			}, 50);
-		} else {
-			const editor = markdownView.editor;
-			if (editor) {
-				editor.setCursor({ line: heading.line, ch: 0 });
-				editor.scrollIntoView(
-					{
-						from: { line: heading.line, ch: 0 },
-						to: { line: heading.line + 1, ch: 0 },
-					},
-					true
-				);
+		setTimeout(() => {
+			const currentMode = markdownView.currentMode;
+			if (currentMode && typeof currentMode.applyScroll === "function") {
+				currentMode.applyScroll(heading.line);
 			}
+		}, 0);
+
+		if (this.plugin.settings.hidePanelOnNavigation) {
+			this.hideExpandedPanel();
 		}
 	}
 
@@ -358,8 +331,7 @@ export class FloatingHeadingsUIManager {
 		markdownView: MarkdownView,
 		headings: HeadingInfo[]
 	): number | null {
-		const isReadingMode =
-			!markdownView.getMode || markdownView.getMode() === "preview";
+		const isReadingMode = this.plugin.isReadingMode();
 
 		if (isReadingMode) {
 			return this.findClosestHeadingInReadingMode(markdownView, headings);
@@ -488,20 +460,6 @@ export class FloatingHeadingsUIManager {
 			"--floating-headings-vertical-position",
 			`${100 - settings.verticalPosition}%`
 		);
-
-		if (settings.panelBackgroundColor) {
-			this.containerElement.style.setProperty(
-				"--floating-headings-panel-bg",
-				settings.panelBackgroundColor
-			);
-		}
-
-		if (settings.collapsedLineColor) {
-			this.containerElement.style.setProperty(
-				"--floating-headings-line-color",
-				settings.collapsedLineColor
-			);
-		}
 
 		this.containerElement.style.setProperty(
 			"--floating-headings-line-thickness",
