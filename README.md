@@ -56,6 +56,7 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 
 Custom Regex patterns can be used to parse and extract heading text from headers. By default, the panel shows the raw text of the heading. If you want to extract specific text, you can define a custom regex pattern, using a named capture group `heading_text`.
 
+> [!NOTE]
 > The parser processes heading text according to settings priority:
 >
 > 1. If a custom Regex pattern is enabled, the `heading_text` named group is displayed in the panel. No other cleaning or filtering is applied.
