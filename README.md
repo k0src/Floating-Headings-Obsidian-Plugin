@@ -52,16 +52,15 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 -   **Parse HTML elements**: Enable parsing of HTML heading tags
 -   **Custom regex pattern**: Define your own heading detection pattern.
 
-### Custom Regex
-
-Custom Regex patterns can be used to parse and extract heading text from headers. By default, the panel shows the raw text of the heading. If you want to extract specific text, you can define a custom regex pattern, using a named capture group `heading_text`.
-
-> [!NOTE]
-> **The parser processes heading text according to settings priority:**
+> [!NOTE] > **The parser processes heading text according to settings priority:**
 >
 > 1. If a custom Regex pattern is enabled, the `heading_text` named group is displayed in the panel. No other cleaning or filtering is applied.
 > 2. If "Parse HTML" is enabled, then HTML tags are removed, then Markdown headings are cleaned.
 > 3. If no parsing options are enabled, Markdown heading are cleaned, and the heading text is displayed as-is.
+
+### Custom Regex
+
+Custom Regex patterns can be used to parse and extract heading text from headers. By default, the panel shows the raw text of the heading. If you want to extract specific text, you can define a custom regex pattern, using a named capture group `heading_text`.
 
 #### Custom Regex Examples
 
