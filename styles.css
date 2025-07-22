@@ -13,6 +13,7 @@
 .floating-headings-container.position-left {
 	left: var(--size-4-5);
 	right: unset;
+	overflow: visible;
 }
 
 .floating-headings-collapsed {
@@ -77,11 +78,16 @@
 	right: unset;
 	transform-origin: left center;
 	transform: translateY(-50%) scaleX(0);
+	z-index: var(--layer-modal);
 }
 
 .floating-headings-expanded.visible {
 	pointer-events: auto;
 	opacity: 1;
+	transform: translateY(-50%) scaleX(1);
+}
+
+.floating-headings-container.position-left .floating-headings-expanded.visible {
 	transform: translateY(-50%) scaleX(1);
 }
 
