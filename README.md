@@ -31,6 +31,7 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 ### General Settings
 
 -   **Enable plugin**: Toggle the plugin on/off.
+-   **Hide panel on navigation**: Automatically hide the panel when navigating to a heading.
 -   **Vertical position**: Vertical position of the sidebar panel.
 -   **Maximum heading level**: Filter headings by level.
 -   **Sidebar position**: Choose which side of the screen the sidebar appears on.
@@ -54,6 +55,12 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 ### Custom Regex
 
 Custom Regex patterns can be used to parse and extract heading text from headers. By default, the panel shows the raw text of the heading. If you want to extract specific text, you can define a custom regex pattern, using a named capture group `heading_text`.
+
+> 📘 The parser processes heading text according to settings priority:
+>
+> 1. If a custom Regex pattern is enabled, the `heading_text` named group is displayed in the panel. No other cleaning or filtering is applied.
+> 2. If "Parse HTML" is enabled, then HTML tags are removed, then Markdown headings are cleaned.
+> 3. If no parsing options are enabled, Markdown heading are cleaned, and the heading text is displayed as-is.
 
 #### Custom Regex Examples
 
