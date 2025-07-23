@@ -1,5 +1,6 @@
 import { MarkdownView } from "obsidian";
 import { HeadingInfo } from "./types";
+import { HeadingFinder, NavigationHelper, DOMHelper } from "./UIUtilities";
 import type FloatingHeadingsPlugin from "../main";
 
 export class FloatingHeadingsUIManager {
@@ -59,7 +60,7 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private createContainer(): HTMLElement {
-		const container = createDiv("floating-headings-container");
+		const container = DOMHelper.createDiv("floating-headings-container");
 
 		if (this.plugin.settings.sidebarPosition === "left") {
 			container.addClass("position-left");
@@ -69,28 +70,22 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private createCollapsedSidebar(): HTMLElement {
-		const sidebar = createDiv("floating-headings-collapsed");
+		const sidebar = DOMHelper.createDiv("floating-headings-collapsed");
 
-		sidebar.addEventListener("mouseenter", () => {
-			this.onMouseEnter();
-		});
-
-		sidebar.addEventListener("mouseleave", () => {
-			this.onMouseLeave();
+		DOMHelper.addEventListeners(sidebar, {
+			mouseenter: () => this.onMouseEnter(),
+			mouseleave: () => this.onMouseLeave(),
 		});
 
 		return sidebar;
 	}
 
 	private createExpandedPanel(): HTMLElement {
-		const panel = createDiv("floating-headings-expanded");
+		const panel = DOMHelper.createDiv("floating-headings-expanded");
 
-		panel.addEventListener("mouseenter", () => {
-			this.onMouseEnter();
-		});
-
-		panel.addEventListener("mouseleave", () => {
-			this.onMouseLeave();
+		DOMHelper.addEventListeners(panel, {
+			mouseenter: () => this.onMouseEnter(),
+			mouseleave: () => this.onMouseLeave(),
 		});
 
 		return panel;
@@ -242,16 +237,19 @@ export class FloatingHeadingsUIManager {
 		heading: HeadingInfo,
 		index: number
 	): HTMLElement {
-		const item = createDiv("floating-heading-item");
+		const item = DOMHelper.createDiv("floating-heading-item");
 
-		item.setAttribute("data-level", heading.level.toString());
+		DOMHelper.setElementAttributes(item, {
+			"data-level": heading.level.toString(),
+			title: heading.text,
+		});
 
 		item.textContent = heading.text;
-		item.title = heading.text;
 
-		item.addEventListener("click", () => {
-			this.scrollToHeading(heading);
-			this.setActiveHeading(index);
+		DOMHelper.addEventListeners(item, {
+			click: () => {
+				this.handleHeadingClick(heading, index);
+			},
 		});
 
 		return item;
@@ -261,30 +259,24 @@ export class FloatingHeadingsUIManager {
 		heading: HeadingInfo,
 		index: number
 	): HTMLElement {
-		const line = createDiv("floating-heading-line");
+		const line = DOMHelper.createDiv("floating-heading-line");
 
-		line.setAttribute("data-level", heading.level.toString());
+		DOMHelper.setElementAttributes(line, {
+			"data-level": heading.level.toString(),
+		});
 
 		return line;
 	}
 
-	private scrollToHeading(heading: HeadingInfo) {
+	private async handleHeadingClick(
+		heading: HeadingInfo,
+		index: number
+	): Promise<void> {
 		const markdownView = this.plugin.getActiveMarkdownView();
 		if (!markdownView) return;
 
-		const file = markdownView.file;
-		if (!file) return;
-
-		markdownView.leaf.openFile(file, {
-			eState: { line: heading.line },
-		});
-
-		setTimeout(() => {
-			const currentMode = markdownView.currentMode;
-			if (currentMode && typeof currentMode.applyScroll === "function") {
-				currentMode.applyScroll(heading.line);
-			}
-		}, 0);
+		await NavigationHelper.scrollToHeading(markdownView, heading);
+		this.setActiveHeading(index);
 
 		if (this.plugin.settings.hidePanelOnNavigation) {
 			this.hideExpandedPanel();
@@ -342,76 +334,16 @@ export class FloatingHeadingsUIManager {
 		const isReadingMode = this.plugin.isReadingMode();
 
 		if (isReadingMode) {
-			return this.findClosestHeadingInReadingMode(markdownView, headings);
-		} else {
-			return this.findClosestHeadingInEditMode(markdownView, headings);
-		}
-	}
-
-	private findClosestHeadingInEditMode(
-		markdownView: MarkdownView,
-		headings: HeadingInfo[]
-	): number | null {
-		const editor = markdownView.editor;
-		if (!editor) return null;
-
-		const cursor = editor.getCursor();
-		const currentLine = cursor.line;
-
-		let closestIndex = 0;
-		let closestDistance = Math.abs(headings[0].line - currentLine);
-
-		for (let i = 1; i < headings.length; i++) {
-			const distance = Math.abs(headings[i].line - currentLine);
-			if (distance < closestDistance) {
-				closestDistance = distance;
-				closestIndex = i;
-			}
-		}
-
-		return closestIndex;
-	}
-
-	private findClosestHeadingInReadingMode(
-		markdownView: MarkdownView,
-		headings: HeadingInfo[]
-	): number | null {
-		const readingView = markdownView.containerEl.querySelector(
-			".markdown-reading-view"
-		);
-		if (!readingView) return null;
-
-		const scrollTop = readingView.scrollTop;
-		const viewportHeight = readingView.clientHeight;
-		const viewportTop = scrollTop;
-
-		const headingElements = Array.from(
-			readingView.querySelectorAll<HTMLHeadingElement>(
-				"h1, h2, h3, h4, h5, h6"
-			)
-		);
-
-		let closestIndex = 0;
-		let closestDistance = Infinity;
-
-		for (let i = 0; i < headings.length; i++) {
-			const heading = headings[i];
-			const matchingElement = headingElements.find(
-				(el) => el.textContent?.trim() === heading.text.trim()
+			return HeadingFinder.findClosestHeadingInReadingMode(
+				markdownView,
+				headings
 			);
-
-			if (matchingElement) {
-				const elementTop = matchingElement.offsetTop;
-				const distance = Math.abs(elementTop - viewportTop);
-
-				if (distance < closestDistance) {
-					closestDistance = distance;
-					closestIndex = i;
-				}
-			}
+		} else {
+			return HeadingFinder.findClosestHeadingInEditMode(
+				markdownView,
+				headings
+			);
 		}
-
-		return headings.length > 0 ? closestIndex : null;
 	}
 
 	cleanup() {

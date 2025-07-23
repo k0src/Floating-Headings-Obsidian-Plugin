@@ -23,15 +23,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.enabled = value;
 						await this.plugin.saveSettings();
-						if (value) {
-							this.plugin.onActiveLeafChange(
-								this.app.workspace.getActiveViewOfType(
-									MarkdownView
-								)?.leaf || null
-							);
-						} else {
-							this.plugin.cleanupUI();
-						}
+						this.plugin.handleEnableDisable();
 					})
 			);
 

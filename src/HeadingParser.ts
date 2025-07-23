@@ -1,10 +1,17 @@
 import { HeadingInfo } from "./types";
-import { MarkdownView, HeadingCache } from "obsidian";
-import type FloatingHeadingsPlugin from "../main";
+import { MarkdownView, HeadingCache, App } from "obsidian";
+
+interface PluginLike {
+	app: App;
+	settings: {
+		parseHtmlElements: boolean;
+		useCustomRegex: boolean;
+	};
+}
 
 export class HeadingParser {
 	static getHeadingsFromCache(
-		plugin: FloatingHeadingsPlugin,
+		plugin: PluginLike,
 		view: MarkdownView
 	): HeadingInfo[] {
 		const file = view?.file;
