@@ -277,9 +277,37 @@
 
 .floating-headings-container.filtering .floating-headings-expanded {
 	top: 0 !important;
-	transform: none !important;
+	/* Allow scale transform for animations, but pin to top */
+	transform: scaleX(1) !important;
 	max-height: var(--floating-headings-panel-max-height, 400px);
 	overflow-y: auto;
+}
+
+.floating-headings-container.filtering .floating-headings-expanded.visible {
+	/* Override the translateY when filtering but keep scale for animations */
+	transform: scaleX(1) !important;
+}
+
+/* When not visible during filtering, allow the scale animation to play */
+.floating-headings-container.filtering
+	.floating-headings-expanded:not(.visible) {
+	transform: scaleX(0) !important;
+}
+
+/* Handle left position during filtering */
+.floating-headings-container.position-left.filtering
+	.floating-headings-expanded {
+	transform: scaleX(1) !important;
+}
+
+.floating-headings-container.position-left.filtering
+	.floating-headings-expanded.visible {
+	transform: scaleX(1) !important;
+}
+
+.floating-headings-container.position-left.filtering
+	.floating-headings-expanded:not(.visible) {
+	transform: scaleX(0) !important;
 }
 
 .floating-headings-container.no-transition .floating-headings-expanded {
