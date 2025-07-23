@@ -163,7 +163,7 @@ export default class FloatingHeadingsPlugin extends Plugin {
 			return;
 		}
 
-		// If custom regex is enabled, we need to read content directly
+		// Read content direactly If custom regex is enabled
 		if (this.settings.useCustomRegex && this.settings.customRegex) {
 			this.app.vault.cachedRead(file).then((content) => {
 				this.processCustomRegexHeadings(content, cacheKey);
@@ -184,7 +184,6 @@ export default class FloatingHeadingsPlugin extends Plugin {
 			);
 			this.currentHeadings = filteredHeadings;
 
-			// Update cache
 			this.headingsCache.set(cacheKey, {
 				headings: filteredHeadings,
 				timestamp: Date.now(),

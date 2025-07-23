@@ -8,7 +8,7 @@ export class FloatingHeadingsUIManager {
 	private collapsedSidebar: HTMLElement | null = null;
 	private expandedPanel: HTMLElement | null = null;
 	private isHovered: boolean = false;
-	private isExpanded: boolean = false; // Track if panel is currently expanded
+	private isExpanded: boolean = false;
 	private hoverTimeout: number | null = null;
 
 	private expandedItemHeight: number = 0;
@@ -24,7 +24,7 @@ export class FloatingHeadingsUIManager {
 		this.containerElement = this.createContainer();
 		this.collapsedSidebar = this.createCollapsedSidebar();
 		this.expandedPanel = this.createExpandedPanel();
-		this.isExpanded = false; // Initialize as collapsed
+		this.isExpanded = false;
 
 		this.containerElement.appendChild(this.collapsedSidebar);
 		this.containerElement.appendChild(this.expandedPanel);
@@ -123,10 +123,8 @@ export class FloatingHeadingsUIManager {
 		this.expandedPanel.classList.add("visible");
 		this.isExpanded = true;
 
-		this.updateActiveHeading();
-
-		// Only apply scroll position if panel was not already expanded
 		if (!wasExpanded) {
+			this.updateActiveHeading();
 			this.applyScrollPosition();
 		}
 	}
@@ -385,7 +383,7 @@ export class FloatingHeadingsUIManager {
 
 		const scrollTop = readingView.scrollTop;
 		const viewportHeight = readingView.clientHeight;
-		const viewportCenter = scrollTop + viewportHeight / 2;
+		const viewportTop = scrollTop;
 
 		const headingElements = Array.from(
 			readingView.querySelectorAll<HTMLHeadingElement>(
@@ -404,7 +402,7 @@ export class FloatingHeadingsUIManager {
 
 			if (matchingElement) {
 				const elementTop = matchingElement.offsetTop;
-				const distance = Math.abs(elementTop - viewportCenter);
+				const distance = Math.abs(elementTop - viewportTop);
 
 				if (distance < closestDistance) {
 					closestDistance = distance;
