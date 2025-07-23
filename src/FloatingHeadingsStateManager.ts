@@ -139,7 +139,12 @@ export class FloatingHeadingsStateManager {
 
 	private shouldUseCustomRegex(): boolean {
 		return (
-			this.settings.useCustomRegex && Boolean(this.settings.customRegex)
+			this.settings.useCustomRegex &&
+			this.settings.customRegexPatterns &&
+			this.settings.customRegexPatterns.length > 0 &&
+			this.settings.customRegexPatterns.some(
+				(pattern) => pattern.trim() !== ""
+			)
 		);
 	}
 
@@ -179,7 +184,7 @@ export class FloatingHeadingsStateManager {
 			content,
 			this.settings.parseHtmlElements,
 			this.settings.useCustomRegex,
-			this.settings.customRegex
+			this.settings.customRegexPatterns
 		);
 		return HeadingParser.filterHeadingsByLevel(
 			allHeadings,

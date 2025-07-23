@@ -218,6 +218,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   [ ] Collapsible heading groups
 -   [ ] Filter input
 -   [ ] Lock open/close hotkey
--   [ ] Support for multiple Regex patterns
+-   [x] Support for multiple Regex patterns
 -   [ ] Per-note settings with YAML frontmatter
 -   [ ] Finalize styles

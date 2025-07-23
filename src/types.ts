@@ -19,7 +19,7 @@ export interface FloatingHeadingsSettings {
 	panelScrollPosition: "top" | "previous" | "closest";
 	parseHtmlElements: boolean;
 	useCustomRegex: boolean;
-	customRegex: string;
+	customRegexPatterns: string[];
 	hidePanelOnNavigation: boolean;
 }
 
@@ -38,7 +38,6 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	panelScrollPosition: "previous",
 	parseHtmlElements: false,
 	useCustomRegex: false,
-	//prettier-ignore
-	customRegex: "/^(#{1,6})\s+(.+)$/m",
+	customRegexPatterns: [""],
 	hidePanelOnNavigation: false,
 };

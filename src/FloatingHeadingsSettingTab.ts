@@ -214,6 +214,14 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						if (value && this.plugin.settings.parseHtmlElements) {
 							this.plugin.settings.parseHtmlElements = false;
 						}
+						if (
+							value &&
+							(!this.plugin.settings.customRegexPatterns ||
+								this.plugin.settings.customRegexPatterns
+									.length === 0)
+						) {
+							this.plugin.settings.customRegexPatterns = [""];
+						}
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();
@@ -222,40 +230,80 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 
 		if (this.plugin.settings.useCustomRegex) {
 			new Setting(containerEl)
-				.setName("Custom regex pattern")
+				.setName("Regex patterns")
 				.setDesc(
-					// prettier-ignore
-					"Define regex to extract heading text for the panel. Use a named group `(?<heading_text>...)` for the group to use as the heading text. For example, using `/^(#{1,6})\s+<span[^>]*>\[\[.*?\]\]\s+(?<heading_text>.*?)<\/span>$/` will extract 'Heading Text' from `## <span style='color:red'>[[link]] Heading Text</span>\`"
-				)
+					"Define multiple regex patterns to extract heading text."
+				);
 
+			this.renderRegexPatterns(containerEl);
+
+			new Setting(containerEl)
+				.setName("Add regex pattern")
+				.addExtraButton((btn) =>
+					btn
+						.setIcon("plus")
+						.setTooltip("Add new pattern")
+						.onClick(() => {
+							this.plugin.settings.customRegexPatterns.push("");
+							this.plugin.saveSettings();
+							this.display();
+						})
+				);
+		}
+	}
+
+	private renderRegexPatterns(container: HTMLElement): void {
+		this.plugin.settings.customRegexPatterns.forEach((pattern, index) => {
+			const setting = new Setting(container)
+				.setName(`Pattern ${index + 1}`)
 				.addText((text) => {
-					const updateRegex = async (value: string) => {
-						if (HeadingParser.isValidRegex(value)) {
-							this.plugin.settings.customRegex = value;
-							await this.plugin.saveSettings();
-							this.plugin.updateHeadings();
-							text.inputEl.removeClass("invalid-regex");
+					const updatePattern = async (value: string) => {
+						this.plugin.settings.customRegexPatterns[index] = value;
+						await this.plugin.saveSettings();
+						this.plugin.updateHeadings();
+
+						if (
+							value.trim() === "" ||
+							HeadingParser.isValidRegex(value)
+						) {
 							text.inputEl.style.borderColor = "";
 						} else {
-							text.inputEl.addClass("invalid-regex");
 							text.inputEl.style.borderColor =
 								"var(--text-error)";
 						}
 					};
 
-					text.setValue(this.plugin.settings.customRegex).onChange(
-						updateRegex
-					);
+					text.setValue(pattern).onChange(updatePattern);
 
 					if (
-						!HeadingParser.isValidRegex(
-							this.plugin.settings.customRegex
-						)
+						pattern.trim() !== "" &&
+						!HeadingParser.isValidRegex(pattern)
 					) {
-						text.inputEl.addClass("invalid-regex");
 						text.inputEl.style.borderColor = "var(--text-error)";
 					}
-				});
-		}
+
+					return text;
+				})
+				.addExtraButton((btn) =>
+					btn
+						.setIcon("trash")
+						.setTooltip("Remove pattern")
+						.onClick(async () => {
+							this.plugin.settings.customRegexPatterns.splice(
+								index,
+								1
+							);
+							if (
+								this.plugin.settings.customRegexPatterns
+									.length === 0
+							) {
+								this.plugin.settings.customRegexPatterns = [""];
+							}
+							await this.plugin.saveSettings();
+							this.plugin.updateHeadings();
+							this.display();
+						})
+				);
+		});
 	}
 }

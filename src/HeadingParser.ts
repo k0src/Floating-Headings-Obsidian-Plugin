@@ -6,6 +6,7 @@ interface PluginLike {
 	settings: {
 		parseHtmlElements: boolean;
 		useCustomRegex: boolean;
+		customRegexPatterns: string[];
 	};
 }
 
@@ -84,34 +85,31 @@ export class HeadingParser {
 			.replace(/\[\[([^\]]+)\]\]/g, "$1");
 	}
 
-	// Fallback method
+	// Parse headings with support for multiple regex patterns
 	static parseHeadings(
 		content: string,
 		parseHtml: boolean = false,
 		useCustomRegex: boolean = false,
-		customRegex?: string
+		customRegexPatterns?: string[]
 	): HeadingInfo[] {
 		const lines = content.split("\n");
 		const headings: HeadingInfo[] = [];
 		let inCodeBlock = false;
 
-		// Default regex pattern for markdown headings
-		let regexPattern = /^(#{1,6})\s+(.+)$/;
-
-		if (useCustomRegex && customRegex) {
-			try {
-				// Support flags (e.g., "g", "i", "m") if passed in customRegex
-				const parts = customRegex.match(/^\/(.+)\/([gimsuy]*)$/);
-				if (parts) {
-					regexPattern = new RegExp(parts[1], parts[2]);
-				} else {
-					regexPattern = new RegExp(customRegex);
-				}
-			} catch (error) {
-				// Fallback to default pattern
-				regexPattern = /^(#{1,6})\s+(.+)$/;
-			}
+		if (
+			useCustomRegex &&
+			customRegexPatterns &&
+			customRegexPatterns.length > 0
+		) {
+			return this.parseHeadingsWithMultiplePatterns(
+				content,
+				parseHtml,
+				customRegexPatterns
+			);
 		}
+
+		// Default markdown parsing
+		const regexPattern = /^(#{1,6})\s+(.+)$/;
 
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i];
@@ -131,57 +129,131 @@ export class HeadingParser {
 			const headingMatch = trimmedLine.match(regexPattern);
 
 			if (headingMatch) {
-				let level: number;
-				let text: string;
-
-				if (useCustomRegex && customRegex) {
-					const captureGroups = headingMatch.slice(1);
-
-					// Use named group "heading_text" if available
-					if (
-						headingMatch.groups &&
-						headingMatch.groups.heading_text
-					) {
-						text = headingMatch.groups.heading_text.trim();
-					} else {
-						// Fallback to last capture group
-						text = captureGroups[captureGroups.length - 1].trim();
-					}
-
-					// Determine level from first capture group
-					const levelGroup = captureGroups[0];
-					if (levelGroup.includes("#")) {
-						level = levelGroup.length;
-					} else if (!isNaN(parseInt(levelGroup))) {
-						level = parseInt(levelGroup);
-					} else {
-						level = 1;
-					}
-				} else {
-					// Default markdown parsing
-					level = headingMatch[1].length;
-					text = headingMatch[2].trim();
-
-					text = this.processHeadingText(
-						text,
-						parseHtml,
-						useCustomRegex
-					);
+				const heading = this.extractHeadingFromMatch(
+					headingMatch,
+					i,
+					trimmedLine,
+					parseHtml,
+					false
+				);
+				if (heading) {
+					headings.push(heading);
 				}
-
-				if (!text || text.length === 0) {
-					text = trimmedLine;
-				}
-
-				headings.push({
-					text,
-					level,
-					line: i,
-				});
 			}
 		}
 
 		return headings;
+	}
+
+	private static parseHeadingsWithMultiplePatterns(
+		content: string,
+		parseHtml: boolean,
+		patterns: string[]
+	): HeadingInfo[] {
+		const lines = content.split("\n");
+		const headings: HeadingInfo[] = [];
+		let inCodeBlock = false;
+
+		const compiledPatterns: RegExp[] = [];
+		for (const pattern of patterns) {
+			if (pattern.trim() === "") continue;
+
+			try {
+				const parts = pattern.match(/^\/(.+)\/([gimsuy]*)$/);
+				if (parts) {
+					compiledPatterns.push(new RegExp(parts[1], parts[2]));
+				} else {
+					compiledPatterns.push(new RegExp(pattern));
+				}
+			} catch (error) {
+				console.warn(`Invalid regex pattern: ${pattern}`, error);
+			}
+		}
+
+		if (compiledPatterns.length === 0) {
+			compiledPatterns.push(/^(#{1,6})\s+(.+)$/);
+		}
+
+		for (let i = 0; i < lines.length; i++) {
+			const line = lines[i];
+			const trimmedLine = line.trim();
+
+			if (trimmedLine.startsWith("```")) {
+				inCodeBlock = !inCodeBlock;
+				continue;
+			}
+			if (inCodeBlock) continue;
+
+			if (trimmedLine.startsWith("`") && !trimmedLine.startsWith("```"))
+				continue;
+			if (line.startsWith("    ") || line.startsWith("\t")) continue;
+
+			for (const regexPattern of compiledPatterns) {
+				const headingMatch = trimmedLine.match(regexPattern);
+				if (headingMatch) {
+					const heading = this.extractHeadingFromMatch(
+						headingMatch,
+						i,
+						trimmedLine,
+						parseHtml,
+						true
+					);
+					if (heading) {
+						headings.push(heading);
+						break;
+					}
+				}
+			}
+		}
+
+		return headings;
+	}
+
+	private static extractHeadingFromMatch(
+		headingMatch: RegExpMatchArray,
+		lineIndex: number,
+		trimmedLine: string,
+		parseHtml: boolean,
+		useCustomRegex: boolean
+	): HeadingInfo | null {
+		let level: number;
+		let text: string;
+
+		if (useCustomRegex) {
+			const captureGroups = headingMatch.slice(1);
+
+			// Use named group if available
+			if (headingMatch.groups && headingMatch.groups.heading_text) {
+				text = headingMatch.groups.heading_text.trim();
+			} else {
+				// Fallback to last capture group
+				text = captureGroups[captureGroups.length - 1].trim();
+			}
+
+			const levelGroup = captureGroups[0];
+			if (levelGroup.includes("#")) {
+				level = levelGroup.length;
+			} else if (!isNaN(parseInt(levelGroup))) {
+				level = parseInt(levelGroup);
+			} else {
+				level = 1;
+			}
+		} else {
+			level = headingMatch[1].length;
+			text = headingMatch[2].trim();
+
+			text = this.processHeadingText(text, parseHtml, useCustomRegex);
+		}
+
+		if (!text || text.length === 0) {
+			text = trimmedLine;
+		}
+
+		return {
+			text,
+			level,
+			line: lineIndex,
+		};
 	}
 
 	static filterHeadingsByLevel(
@@ -207,6 +279,12 @@ export class HeadingParser {
 		} catch {
 			return false;
 		}
+	}
+
+	static areValidRegexPatterns(patterns: string[]): boolean {
+		return patterns.every(
+			(pattern) => pattern.trim() === "" || this.isValidRegex(pattern)
+		);
 	}
 
 	static hasHeadingTextGroup(pattern: string): boolean {

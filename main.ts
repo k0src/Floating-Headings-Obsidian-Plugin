@@ -48,6 +48,13 @@ export default class FloatingHeadingsPlugin extends Plugin {
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
+
+		if (
+			!this.settings.customRegexPatterns ||
+			this.settings.customRegexPatterns.length === 0
+		) {
+			this.settings.customRegexPatterns = [""];
+		}
 	}
 
 	async saveSettings() {
@@ -60,14 +67,12 @@ export default class FloatingHeadingsPlugin extends Plugin {
 
 	handleEnableDisable() {
 		if (this.settings.enabled) {
-			// Re-initialize with current active view
 			const activeView =
 				this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (activeView) {
 				this.stateManager?.handleActiveLeafChange(activeView.leaf);
 			}
 		} else {
-			// Clean up everything when disabled
 			this.stateManager?.cleanup();
 		}
 	}
