@@ -134,6 +134,7 @@ export class FloatingHeadingsUIManager {
 		this.isExpanded = true;
 
 		if (!wasExpanded) {
+			this.updateExpandedView();
 			this.updateActiveHeading();
 			this.applyScrollPosition();
 		}
@@ -141,6 +142,13 @@ export class FloatingHeadingsUIManager {
 
 	private hideExpandedPanel() {
 		if (!this.expandedPanel || !this.collapsedSidebar) return;
+
+		if (
+			this.containerElement &&
+			this.containerElement.hasClass("no-transition")
+		) {
+			this.containerElement.removeClass("no-transition");
+		}
 
 		this.collapsedSidebar.classList.remove("hovered");
 		this.expandedPanel.classList.remove("visible");
@@ -250,7 +258,11 @@ export class FloatingHeadingsUIManager {
 		const allHeadings = this.plugin.getCurrentHeadings();
 		let headingsToShow = allHeadings;
 
-		if (this.plugin.settings.enableFilter && this.filterQuery) {
+		if (
+			this.plugin.settings.enableFilter &&
+			this.filterQuery &&
+			this.isFiltering
+		) {
 			headingsToShow = this.filteredHeadings;
 		}
 
@@ -505,7 +517,10 @@ export class FloatingHeadingsUIManager {
 			);
 		}
 
-		this.updateExpandedView();
+		if (this.isExpanded) {
+			this.updateExpandedView();
+		}
+
 		this.updatePanelPinning();
 	}
 
@@ -513,10 +528,16 @@ export class FloatingHeadingsUIManager {
 		if (!this.containerElement) return;
 
 		if (this.isFiltering) {
-			// Pin panel to top during filtering
 			this.containerElement.addClass("filtering");
+			this.containerElement.addClass("no-transition");
 		} else {
 			this.containerElement.removeClass("filtering");
+
+			requestAnimationFrame(() => {
+				if (this.containerElement) {
+					this.containerElement.removeClass("no-transition");
+				}
+			});
 		}
 	}
 
@@ -532,7 +553,13 @@ export class FloatingHeadingsUIManager {
 			) as HTMLElement;
 			clearIcon?.addClass("hidden");
 
-			this.applyFilter();
+			if (!this.isExpanded) {
+				setTimeout(() => {
+					this.updatePanelPinning();
+				}, this.plugin.settings.animationDuration);
+			} else {
+				this.applyFilter();
+			}
 		}
 	}
 

@@ -180,7 +180,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Animation duration")
-			.setDesc("Duration of hover animations in milliseconds.")
+			.setDesc("Duration of animations in milliseconds.")
 			.addSlider((slider) =>
 				slider
 					.setLimits(50, 500, 25)

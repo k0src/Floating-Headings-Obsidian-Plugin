@@ -276,8 +276,14 @@
 }
 
 .floating-headings-container.filtering .floating-headings-expanded {
-	transform: translateY(0) !important;
 	top: 0 !important;
+	transform: none !important;
+	max-height: var(--floating-headings-panel-max-height, 400px);
+	overflow-y: auto;
+}
+
+.floating-headings-container.no-transition .floating-headings-expanded {
+	transition: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
