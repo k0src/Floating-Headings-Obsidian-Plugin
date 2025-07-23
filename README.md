@@ -213,7 +213,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## To-Do
 
 -   [x] Improved Regex support
--   [ ] Dynamic indentation
+-   [x] Dynamic indentation
 -   [ ] Draw bullets and lines
 -   [ ] Collapsible heading groups
 -   [ ] Filter input

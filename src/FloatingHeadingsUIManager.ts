@@ -224,23 +224,44 @@ export class FloatingHeadingsUIManager {
 		this.expandedPanel.empty();
 
 		const headings = this.plugin.getCurrentHeadings();
+		const dynamicLevels = this.calculateDynamicLevels(headings);
 
 		headings.forEach((heading, index) => {
-			const item = this.createExpandedHeadingItem(heading, index);
+			const item = this.createExpandedHeadingItem(
+				heading,
+				index,
+				dynamicLevels[index]
+			);
 			this.expandedPanel!.appendChild(item);
 		});
 
 		this.updateActiveHeading();
 	}
 
+	private calculateDynamicLevels(headings: HeadingInfo[]): number[] {
+		if (headings.length === 0) return [];
+
+		const uniqueLevels = Array.from(
+			new Set(headings.map((h) => h.level))
+		).sort((a, b) => a - b);
+
+		const levelMapping = new Map<number, number>();
+		uniqueLevels.forEach((originalLevel, index) => {
+			levelMapping.set(originalLevel, index + 1);
+		});
+
+		return headings.map((heading) => levelMapping.get(heading.level) || 1);
+	}
+
 	private createExpandedHeadingItem(
 		heading: HeadingInfo,
-		index: number
+		index: number,
+		dynamicLevel: number
 	): HTMLElement {
 		const item = DOMHelper.createDiv("floating-heading-item");
 
 		DOMHelper.setElementAttributes(item, {
-			"data-level": heading.level.toString(),
+			"data-level": dynamicLevel.toString(),
 			title: heading.text,
 		});
 
