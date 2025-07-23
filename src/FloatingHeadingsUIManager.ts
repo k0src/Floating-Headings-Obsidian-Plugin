@@ -146,6 +146,10 @@ export class FloatingHeadingsUIManager {
 		this.expandedPanel.classList.remove("visible");
 		this.isExpanded = false;
 
+		if (this.filterInput) {
+			this.filterInput.blur();
+		}
+
 		this.clearFilter();
 	}
 

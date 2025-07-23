@@ -196,8 +196,7 @@
 
 /* Filter styles */
 .floating-headings-filter-container {
-	padding: var(--size-2-2) var(--size-4-2);
-	margin-bottom: var(--size-2-1);
+	padding: var(--size-2-2);
 }
 
 .floating-headings-filter-input-box {
