@@ -1,4 +1,4 @@
-import { MarkdownView } from "obsidian";
+import { MarkdownView, setIcon } from "obsidian";
 import { HeadingInfo } from "./types";
 import { HeadingFinder, NavigationHelper, DOMHelper } from "./UIUtilities";
 import type FloatingHeadingsPlugin from "../main";
@@ -15,6 +15,12 @@ export class FloatingHeadingsUIManager {
 	private expandedItemHeight: number = 0;
 	private expandedPadding: number = 0;
 
+	private filterInput: HTMLInputElement | null = null;
+	private filterContainer: HTMLElement | null = null;
+	private filterQuery: string = "";
+	private filteredHeadings: HeadingInfo[] = [];
+	private isFiltering: boolean = false;
+
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
 	}
@@ -26,6 +32,10 @@ export class FloatingHeadingsUIManager {
 		this.collapsedSidebar = this.createCollapsedSidebar();
 		this.expandedPanel = this.createExpandedPanel();
 		this.isExpanded = false;
+
+		this.filterQuery = "";
+		this.filteredHeadings = [];
+		this.isFiltering = false;
 
 		this.containerElement.appendChild(this.collapsedSidebar);
 		this.containerElement.appendChild(this.expandedPanel);
@@ -88,6 +98,11 @@ export class FloatingHeadingsUIManager {
 			mouseleave: () => this.onMouseLeave(),
 		});
 
+		if (this.plugin.settings.enableFilter) {
+			const filterContainer = this.createFilterContainer();
+			panel.appendChild(filterContainer);
+		}
+
 		return panel;
 	}
 
@@ -130,6 +145,8 @@ export class FloatingHeadingsUIManager {
 		this.collapsedSidebar.classList.remove("hovered");
 		this.expandedPanel.classList.remove("visible");
 		this.isExpanded = false;
+
+		this.clearFilter();
 	}
 
 	private applyScrollPosition() {
@@ -221,12 +238,21 @@ export class FloatingHeadingsUIManager {
 	updateExpandedView() {
 		if (!this.expandedPanel) return;
 
-		this.expandedPanel.empty();
+		const headingItems = this.expandedPanel.querySelectorAll(
+			".floating-heading-item"
+		);
+		headingItems.forEach((item) => item.remove());
 
-		const headings = this.plugin.getCurrentHeadings();
-		const dynamicLevels = this.calculateDynamicLevels(headings);
+		const allHeadings = this.plugin.getCurrentHeadings();
+		let headingsToShow = allHeadings;
 
-		headings.forEach((heading, index) => {
+		if (this.plugin.settings.enableFilter && this.filterQuery) {
+			headingsToShow = this.filteredHeadings;
+		}
+
+		const dynamicLevels = this.calculateDynamicLevels(headingsToShow);
+
+		headingsToShow.forEach((heading, index) => {
 			const item = this.createExpandedHeadingItem(
 				heading,
 				index,
@@ -381,6 +407,12 @@ export class FloatingHeadingsUIManager {
 		this.expandedPanel = null;
 		this.isHovered = false;
 		this.isExpanded = false;
+
+		this.filterInput = null;
+		this.filterContainer = null;
+		this.filterQuery = "";
+		this.filteredHeadings = [];
+		this.isFiltering = false;
 	}
 
 	refresh() {
@@ -389,6 +421,114 @@ export class FloatingHeadingsUIManager {
 			const parent = this.containerElement.parentElement;
 			this.cleanup();
 			this.mount(parent);
+		}
+	}
+
+	private createFilterContainer(): HTMLElement {
+		const container = DOMHelper.createDiv(
+			"floating-headings-filter-container"
+		);
+
+		const inputBox = DOMHelper.createDiv(
+			"floating-headings-filter-input-box"
+		);
+
+		const searchIcon = DOMHelper.createDiv(
+			"floating-headings-filter-icon search-icon"
+		);
+		setIcon(searchIcon, "search");
+
+		this.filterInput = document.createElement("input");
+		this.filterInput.type = "text";
+		this.filterInput.placeholder = "Filter headings...";
+		this.filterInput.className = "floating-headings-filter-input";
+
+		const clearIcon = DOMHelper.createDiv(
+			"floating-headings-filter-icon clear-icon hidden"
+		);
+		setIcon(clearIcon, "x");
+
+		DOMHelper.addEventListeners(this.filterInput, {
+			input: (e) =>
+				this.onFilterInput((e.target as HTMLInputElement).value),
+			keydown: (e) => this.onFilterKeydown(e as KeyboardEvent),
+		});
+
+		DOMHelper.addEventListeners(clearIcon, {
+			click: () => this.clearFilter(),
+		});
+
+		inputBox.appendChild(searchIcon);
+		inputBox.appendChild(this.filterInput);
+		inputBox.appendChild(clearIcon);
+		container.appendChild(inputBox);
+
+		this.filterContainer = container;
+		return container;
+	}
+
+	private onFilterInput(value: string) {
+		this.filterQuery = value.trim().toLowerCase();
+		const clearIcon = this.filterContainer?.querySelector(
+			".clear-icon"
+		) as HTMLElement;
+
+		this.isFiltering = Boolean(this.filterQuery);
+
+		if (this.filterQuery) {
+			clearIcon?.removeClass("hidden");
+		} else {
+			clearIcon?.addClass("hidden");
+		}
+
+		this.applyFilter();
+	}
+
+	private onFilterKeydown(e: KeyboardEvent) {
+		if (e.key === "Escape") {
+			this.clearFilter();
+		}
+	}
+
+	private applyFilter() {
+		const allHeadings = this.plugin.getCurrentHeadings();
+
+		if (!this.filterQuery) {
+			this.filteredHeadings = [];
+		} else {
+			this.filteredHeadings = allHeadings.filter((heading) =>
+				heading.text.toLowerCase().includes(this.filterQuery)
+			);
+		}
+
+		this.updateExpandedView();
+		this.updatePanelPinning();
+	}
+
+	private updatePanelPinning() {
+		if (!this.containerElement) return;
+
+		if (this.isFiltering) {
+			// Pin panel to top during filtering
+			this.containerElement.addClass("filtering");
+		} else {
+			this.containerElement.removeClass("filtering");
+		}
+	}
+
+	private clearFilter() {
+		if (this.filterInput) {
+			this.filterInput.value = "";
+			this.filterQuery = "";
+			this.filteredHeadings = [];
+			this.isFiltering = false;
+
+			const clearIcon = this.filterContainer?.querySelector(
+				".clear-icon"
+			) as HTMLElement;
+			clearIcon?.addClass("hidden");
+
+			this.applyFilter();
 		}
 	}
 

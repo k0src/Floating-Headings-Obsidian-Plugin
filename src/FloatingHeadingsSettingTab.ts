@@ -28,6 +28,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("Enable filter")
+			.setDesc(
+				"Enable filter input to search headings in the expanded panel."
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.enableFilter)
+					.onChange(async (value) => {
+						this.plugin.settings.enableFilter = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Hide panel on navigation")
 			.setDesc(
 				"Hide the expanded panel after clicking on a heading to navigate."

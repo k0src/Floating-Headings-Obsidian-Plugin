@@ -21,6 +21,7 @@ export interface FloatingHeadingsSettings {
 	useCustomRegex: boolean;
 	customRegexPatterns: string[];
 	hidePanelOnNavigation: boolean;
+	enableFilter: boolean;
 }
 
 export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
@@ -40,4 +41,5 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	useCustomRegex: false,
 	customRegexPatterns: [""],
 	hidePanelOnNavigation: false,
+	enableFilter: false,
 };

@@ -194,6 +194,93 @@
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
+/* Filter styles */
+.floating-headings-filter-container {
+	padding: var(--size-2-2) var(--size-4-2);
+	margin-bottom: var(--size-2-1);
+}
+
+.floating-headings-filter-input-box {
+	padding: 0 var(--size-4-2);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-s);
+	display: flex;
+	align-items: center;
+	background: var(--background-secondary);
+	gap: var(--size-2-1);
+}
+
+.floating-headings-filter-input-box:focus-within {
+	box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.floating-headings-filter-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--icon-s);
+	height: var(--icon-s);
+	color: var(--icon-color);
+	opacity: var(--icon-opacity);
+	flex-shrink: 0;
+}
+
+.floating-headings-filter-icon svg {
+	width: var(--icon-s);
+	height: var(--icon-s);
+	stroke-width: var(--icon-s-stroke-width);
+}
+
+.floating-headings-filter-input {
+	flex: 1;
+	background: transparent !important;
+	border: none !important;
+	outline: none;
+	font-family: var(--font-interface);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-normal);
+	padding: var(--size-2-2);
+	min-width: 0;
+}
+
+.floating-headings-filter-input::placeholder {
+	color: var(--text-faint);
+}
+
+.floating-headings-filter-input:focus {
+	box-shadow: none !important;
+}
+
+.floating-headings-filter-icon.clear-icon {
+	cursor: var(--cursor-link);
+	border-radius: var(--clickable-icon-radius);
+	transition: color var(--floating-headings-animation-duration, 150ms)
+		ease-in-out;
+}
+
+.floating-headings-filter-icon.clear-icon:hover {
+	color: var(--icon-color-hover);
+}
+
+.floating-headings-filter-icon.clear-icon:active {
+	color: var(--icon-color-active);
+}
+
+.floating-headings-filter-icon.clear-icon.hidden {
+	display: none;
+}
+
+/* Pinned positioning during filtering */
+.floating-headings-container.filtering .floating-headings-collapsed {
+	transform: translateY(0);
+	top: 0;
+}
+
+.floating-headings-container.filtering .floating-headings-expanded {
+	transform: translateY(0) !important;
+	top: 0 !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.floating-headings-container *,
 	.floating-headings-container *::before,
