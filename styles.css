@@ -55,7 +55,7 @@
 	);
 	border: var(--border-width) solid var(--background-modifier-border);
 	border-radius: var(--radius-m);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+	box-shadow: var(--shadow-s);
 	overflow-y: auto;
 	padding: var(--size-4-2);
 	opacity: 0;
@@ -270,13 +270,13 @@
 }
 
 .theme-light .floating-headings-collapsed {
-	background-color: rgba(255, 255, 255, 0.95);
+	background-color: var(--background-primary);
 	border-color: var(--border-color);
 }
 
 .theme-light .floating-headings-expanded {
-	background-color: rgba(255, 255, 255, 0.95);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+	background-color: var(--background-primary);
+	box-shadow: var(--shadow-s);
 }
 
 /* Filter styles */

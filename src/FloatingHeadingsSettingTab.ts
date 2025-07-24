@@ -101,7 +101,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					})
 			);
 
-		new Setting(containerEl).setName("Visual customization").setHeading();
+		new Setting(containerEl).setName("Appearance").setHeading();
 
 		new Setting(containerEl)
 			.setName("Panel max height")
@@ -281,10 +281,9 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 							value.trim() === "" ||
 							HeadingParser.isValidRegex(value)
 						) {
-							text.inputEl.style.borderColor = "";
+							text.inputEl.removeClass("invalid-regex");
 						} else {
-							text.inputEl.style.borderColor =
-								"var(--text-error)";
+							text.inputEl.addClass("invalid-regex");
 						}
 					};
 
@@ -294,7 +293,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						pattern.trim() !== "" &&
 						!HeadingParser.isValidRegex(pattern)
 					) {
-						text.inputEl.style.borderColor = "var(--text-error)";
+						text.inputEl.addClass("invalid-regex");
 					}
 
 					return text;

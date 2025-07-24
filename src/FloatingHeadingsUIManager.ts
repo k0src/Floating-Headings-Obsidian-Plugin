@@ -131,7 +131,7 @@ export class FloatingHeadingsUIManager {
 		this.hoverTimeout = window.setTimeout(() => {
 			this.isHovered = false;
 			this.hideExpandedPanel();
-		}, 100);
+		}, 50);
 	}
 
 	private showExpandedPanel() {
