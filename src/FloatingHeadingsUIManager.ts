@@ -22,6 +22,8 @@ export class FloatingHeadingsUIManager {
 	private filteredHeadings: HeadingInfo[] = [];
 	private isFiltering: boolean = false;
 
+	private collapsedHeadings: Set<string> = new Set();
+
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
 	}
@@ -42,6 +44,8 @@ export class FloatingHeadingsUIManager {
 		this.containerElement.appendChild(this.collapsedSidebar);
 		this.containerElement.appendChild(this.expandedPanel);
 		parentElement.appendChild(this.containerElement);
+
+		this.loadCollapsedState();
 
 		this.updateCSSProperties();
 		this.calculateDimensionsFromStyles();
@@ -275,14 +279,29 @@ export class FloatingHeadingsUIManager {
 		const dynamicLevels = this.calculateDynamicLevels(headingsToShow);
 
 		headingsToShow.forEach((heading, index) => {
+			const originalIndex = allHeadings.findIndex(
+				(h, idx) =>
+					h.text === heading.text &&
+					h.line === heading.line &&
+					h.level === heading.level
+			);
+
+			const hasChildren = this.doesHeadingHaveChildren(
+				headingsToShow,
+				index,
+				dynamicLevels
+			);
+
 			const item = this.createExpandedHeadingItem(
 				heading,
-				index,
-				dynamicLevels[index]
+				originalIndex !== -1 ? originalIndex : index,
+				dynamicLevels[index],
+				hasChildren
 			);
 			this.expandedPanel!.appendChild(item);
 		});
 
+		this.applyInitialCollapsedStates();
 		this.updateActiveHeading();
 	}
 
@@ -301,10 +320,139 @@ export class FloatingHeadingsUIManager {
 		return headings.map((heading) => levelMapping.get(heading.level) || 1);
 	}
 
+	private doesHeadingHaveChildren(
+		headings: HeadingInfo[],
+		currentIndex: number,
+		dynamicLevels: number[]
+	): boolean {
+		const currentLevel = dynamicLevels[currentIndex];
+
+		for (let i = currentIndex + 1; i < headings.length; i++) {
+			const nextLevel = dynamicLevels[i];
+
+			if (nextLevel <= currentLevel) {
+				break;
+			}
+
+			if (nextLevel > currentLevel) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private applyInitialCollapsedStates(): void {
+		if (!this.expandedPanel) return;
+
+		const items = this.expandedPanel.querySelectorAll(
+			".floating-heading-item"
+		) as NodeListOf<HTMLElement>;
+
+		items.forEach((item) => {
+			const isCollapsed = item.classList.contains("collapsed");
+			if (isCollapsed) {
+				const parentLevel = parseInt(item.dataset.level || "0");
+				let currentElement =
+					item.nextElementSibling as HTMLElement | null;
+
+				while (
+					currentElement &&
+					currentElement.classList.contains("floating-heading-item")
+				) {
+					const currentLevel = parseInt(
+						currentElement.dataset.level || "0"
+					);
+					if (currentLevel <= parentLevel) {
+						break;
+					}
+					currentElement.classList.add("collapsed-hidden");
+					currentElement =
+						currentElement.nextElementSibling as HTMLElement | null;
+				}
+			}
+		});
+	}
+
+	private getHeadingId(heading: HeadingInfo, index: number): string {
+		return `${heading.text}-${heading.line}-${heading.level}-${index}`;
+	}
+
+	private handleCollapseToggle(
+		event: MouseEvent,
+		heading: HeadingInfo,
+		index: number
+	): void {
+		event.stopPropagation();
+
+		const iconElement = event.currentTarget as HTMLElement;
+		const headingItem = iconElement.closest(
+			".floating-heading-item"
+		) as HTMLElement;
+		if (!headingItem) return;
+
+		const parentLevel: number = parseInt(headingItem.dataset.level || "0");
+		const isCollapsing = !headingItem.classList.contains("collapsed");
+
+		headingItem.classList.toggle("collapsed");
+		iconElement.classList.toggle("collapsed");
+
+		const headingId = this.getHeadingId(heading, index);
+		if (isCollapsing) {
+			this.collapsedHeadings.add(headingId);
+		} else {
+			this.collapsedHeadings.delete(headingId);
+		}
+		this.saveCollapsedState();
+
+		const elementsToProcess: HTMLElement[] = [];
+		let currentElement: HTMLElement | null =
+			headingItem.nextElementSibling as HTMLElement | null;
+
+		while (
+			currentElement &&
+			currentElement.classList.contains("floating-heading-item")
+		) {
+			const currentLevel: number = parseInt(
+				currentElement.dataset.level || "0"
+			);
+			if (currentLevel <= parentLevel) {
+				break;
+			}
+			elementsToProcess.push(currentElement);
+			currentElement =
+				currentElement.nextElementSibling as HTMLElement | null;
+		}
+
+		requestAnimationFrame(() => {
+			let visibilityDepthLimit = isCollapsing ? -1 : parentLevel + 1;
+
+			elementsToProcess.forEach((el) => {
+				const currentLevel = parseInt(el.dataset.level || "0");
+
+				if (isCollapsing) {
+					el.classList.add("collapsed-hidden");
+				} else {
+					if (currentLevel <= visibilityDepthLimit) {
+						el.classList.remove("collapsed-hidden");
+						visibilityDepthLimit = el.classList.contains(
+							"collapsed"
+						)
+							? currentLevel
+							: currentLevel + 1;
+					} else {
+						el.classList.add("collapsed-hidden");
+					}
+				}
+			});
+		});
+	}
+
 	private createExpandedHeadingItem(
 		heading: HeadingInfo,
 		index: number,
-		dynamicLevel: number
+		dynamicLevel: number,
+		hasChildren: boolean
 	): HTMLElement {
 		const item = DOMHelper.createDiv("floating-heading-item");
 
@@ -313,7 +461,38 @@ export class FloatingHeadingsUIManager {
 			title: heading.text,
 		});
 
-		item.textContent = heading.text;
+		const content = DOMHelper.createDiv("floating-heading-content");
+
+		if (hasChildren) {
+			const collapseIcon = DOMHelper.createDiv(
+				"floating-heading-collapse-icon"
+			);
+			const headingId = this.getHeadingId(heading, index);
+			const isCollapsed = this.collapsedHeadings.has(headingId);
+
+			if (isCollapsed) {
+				collapseIcon.classList.add("collapsed");
+				item.classList.add("collapsed");
+			}
+
+			setIcon(collapseIcon, "chevron-down");
+
+			DOMHelper.addEventListeners(collapseIcon, {
+				click: (e) => {
+					e.stopPropagation();
+					this.handleCollapseToggle(e as MouseEvent, heading, index);
+				},
+			});
+
+			content.appendChild(collapseIcon);
+		}
+
+		const textSpan = document.createElement("span");
+		textSpan.className = "floating-heading-text";
+		textSpan.textContent = heading.text;
+		content.appendChild(textSpan);
+
+		item.appendChild(content);
 
 		DOMHelper.addEventListeners(item, {
 			click: () => {
@@ -433,6 +612,31 @@ export class FloatingHeadingsUIManager {
 		}
 	}
 
+	private loadCollapsedState(): void {
+		const saved = localStorage.getItem("floating-headings-collapsed-state");
+		if (saved) {
+			try {
+				const collapsedArray = JSON.parse(saved);
+				this.collapsedHeadings = new Set(collapsedArray);
+			} catch (error) {
+				console.warn("Failed to load collapsed headings state:", error);
+				this.collapsedHeadings = new Set();
+			}
+		}
+	}
+
+	private saveCollapsedState(): void {
+		try {
+			const collapsedArray = Array.from(this.collapsedHeadings);
+			localStorage.setItem(
+				"floating-headings-collapsed-state",
+				JSON.stringify(collapsedArray)
+			);
+		} catch (error) {
+			console.warn("Failed to save collapsed headings state:", error);
+		}
+	}
+
 	cleanup() {
 		if (this.hoverTimeout) {
 			clearTimeout(this.hoverTimeout);
@@ -454,6 +658,8 @@ export class FloatingHeadingsUIManager {
 		this.filterQuery = "";
 		this.filteredHeadings = [];
 		this.isFiltering = false;
+
+		this.collapsedHeadings.clear();
 	}
 
 	refresh() {

@@ -217,7 +217,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   [ ] Draw bullets and lines
 -   [ ] Collapsible heading groups
 -   [x] Filter input
--   [ ] Lock open/close hotkey
+-   [x] Lock open/close hotkey
 -   [x] Support for multiple Regex patterns
 -   [ ] Per-note settings with YAML frontmatter
 -   [ ] Finalize styles

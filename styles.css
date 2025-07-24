@@ -118,28 +118,75 @@
 
 /* Level-based indentation and font weights */
 .floating-heading-item[data-level="1"] {
-	padding-left: var(--size-4-3);
+	padding-left: var(--size-4-2);
 	font-weight: var(--font-medium);
 }
 .floating-heading-item[data-level="2"] {
-	padding-left: var(--size-4-6);
+	padding-left: var(--size-4-4);
 	font-weight: var(--font-medium);
 }
 .floating-heading-item[data-level="3"] {
-	padding-left: var(--size-4-9);
+	padding-left: var(--size-4-6);
 	font-weight: var(--font-medium);
 }
 .floating-heading-item[data-level="4"] {
-	padding-left: var(--size-4-12);
+	padding-left: var(--size-4-8);
 	font-weight: var(--font-normal);
 }
 .floating-heading-item[data-level="5"] {
-	padding-left: calc(var(--size-4-12) + var(--size-4-3));
+	padding-left: var(--size-4-10);
 	font-weight: var(--font-normal);
 }
 .floating-heading-item[data-level="6"] {
-	padding-left: var(--size-4-18);
+	padding-left: var(--size-4-12);
 	font-weight: var(--font-normal);
+}
+
+/* Collapsible heading styles */
+.floating-heading-content {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.floating-heading-collapse-icon {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+	margin-right: var(--size-2-1);
+	cursor: pointer;
+	color: var(--icon-color);
+	opacity: var(--icon-opacity);
+	transition: transform 0.2s ease, color 0.2s ease;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.floating-heading-collapse-icon:hover {
+	color: var(--text-normal);
+}
+
+.floating-heading-collapse-icon.collapsed {
+	transform: rotate(-90deg);
+	color: var(--color-accent);
+}
+
+.floating-heading-collapse-icon svg {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+	stroke-width: var(--icon-xs-stroke-width);
+}
+
+.floating-heading-text {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.floating-heading-item.collapsed-hidden {
+	display: none;
 }
 
 .floating-heading-line {
@@ -277,24 +324,20 @@
 
 .floating-headings-container.filtering .floating-headings-expanded {
 	top: 0 !important;
-	/* Allow scale transform for animations, but pin to top */
 	transform: scaleX(1) !important;
 	max-height: var(--floating-headings-panel-max-height, 400px);
 	overflow-y: auto;
 }
 
 .floating-headings-container.filtering .floating-headings-expanded.visible {
-	/* Override the translateY when filtering but keep scale for animations */
 	transform: scaleX(1) !important;
 }
 
-/* When not visible during filtering, allow the scale animation to play */
 .floating-headings-container.filtering
 	.floating-headings-expanded:not(.visible) {
 	transform: scaleX(0) !important;
 }
 
-/* Handle left position during filtering */
 .floating-headings-container.position-left.filtering
 	.floating-headings-expanded {
 	transform: scaleX(1) !important;
