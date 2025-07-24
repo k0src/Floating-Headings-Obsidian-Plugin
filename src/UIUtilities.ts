@@ -35,34 +35,35 @@ export class HeadingFinder {
 		);
 		if (!readingView || headings.length === 0) return null;
 
-		const scrollTop = readingView.scrollTop;
-		const viewportTop = scrollTop;
+		const currentScrollPosition =
+			markdownView.currentMode?.getScroll?.() ?? readingView.scrollTop;
 
-		const headingElements = Array.from(
-			readingView.querySelectorAll<HTMLHeadingElement>(
-				"h1, h2, h3, h4, h5, h6"
-			)
-		);
+		const binarySearchClosestHeading = (
+			headings: HeadingInfo[],
+			targetScrollPosition: number
+		): number => {
+			let closestIndex = 0;
+			let low = 0;
+			let high = headings.length - 1;
 
-		let closestIndex = 0;
-		let closestDistance = Infinity;
+			while (low <= high) {
+				const mid = Math.floor((low + high) / 2);
+				const midLine = headings[mid].line;
 
-		for (let i = 0; i < headings.length; i++) {
-			const heading = headings[i];
-			const matchingElement = headingElements.find(
-				(el) => el.textContent?.trim() === heading.text.trim()
-			);
-
-			if (matchingElement) {
-				const elementTop = matchingElement.offsetTop;
-				const distance = Math.abs(elementTop - viewportTop);
-
-				if (distance < closestDistance) {
-					closestDistance = distance;
-					closestIndex = i;
+				if (midLine <= targetScrollPosition) {
+					closestIndex = mid;
+					low = mid + 1;
+				} else {
+					high = mid - 1;
 				}
 			}
-		}
+			return closestIndex;
+		};
+
+		const closestIndex = binarySearchClosestHeading(
+			headings,
+			currentScrollPosition + 1
+		);
 
 		return closestIndex;
 	}
