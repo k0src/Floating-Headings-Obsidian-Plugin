@@ -2,15 +2,23 @@
 
 An Obsidian plugin that displays a floating, collapsible outline of your note's headings on the right side of the editor.
 
+![splash](./assets/splash.png)
+
 ## Features
 
--   **Collapsed sidebar**: Shows visual indicators for each heading as different sized lines.
--   **Hover to expand**: Full heading text appears in a panel.
--   **Click to navigate**: Jump directly to any heading in your document.
--   **Heading level filtering**: Choose which heading levels to display (H1-H6).
--   **Visual customization**: Customize colors, panel size, and animation speed.
--   **HTML parsing**: Option to parse HTML heading elements.
--   **Custom parsing**: Support for custom regex patterns to parse non-standard headings.
+-   **Floating sidebar**: Collapsed view with visual heading indicators
+-   **Hover expansion**: Full heading text in expandable panel
+-   **Click navigation**: Jump to any heading instantly
+-   **Filter search**: Search and filter headings in real-time
+-   **Collapsible groups**: Expand/collapse heading hierarchies
+-   **Position control**: Left/right sidebar placement and vertical positioning
+-   **Level filtering**: Show only specific heading levels (H1-H6)
+-   **Custom parsing**: HTML tag stripping and regex pattern support
+-   **Theme adaptive**: Automatically matches your Obsidian theme
+
+### Adapts to Themes
+
+![themes](./assets/themes.png)
 
 ## Installation
 
@@ -26,31 +34,30 @@ _Coming soon_
 
 ## Settings
 
-Access settings via **Settings → Community Plugins → Floating Headings**
+Access via **Settings → Community Plugins → Floating Headings**
 
-### General Settings
+### Basic
 
--   **Enable plugin**: Toggle the plugin on/off.
--   **Hide panel on navigation**: Automatically hide the panel when navigating to a heading.
--   **Vertical position**: Vertical position of the sidebar panel.
--   **Maximum heading level**: Filter headings by level.
--   **Sidebar position**: Choose which side of the screen the sidebar appears on.
+-   **Enable plugin**: Toggle on/off
+-   **Enable filter**: Search headings in expanded panel
+-   **Hide panel on navigation**: Auto-hide after clicking headings
+-   **Sidebar position**: Left or right side placement
+-   **Vertical position**: Sidebar vertical positioning (0-100%)
+-   **Maximum heading level**: Filter by heading level (1-6)
 
-### Visual Customization
+### Appearance
 
--   **Panel width**: Adjust the expanded panel width.
--   **Panel max height**: Set maximum height for the panel.
--   **Collapsed width**: Width of the collapsed sidebar
--   **Animation duration**: Control transition speed.
--   **Line thickness**: Set the thickness of the collasped heading lines.
--   **Panel scroll position**: Change the scroll position of the panel when opened. Can be set to the top of the panel, the current header, or the previous scroll position.
--   **Panel background color**: Custom background color.
--   **Collapsed line color**: Color for heading indicators.
+-   **Panel width**: Expanded panel width (180-400px)
+-   **Panel max height**: Maximum panel height (100-800px)
+-   **Panel scroll position**: Top, previous position, or current header
+-   **Sidebar width**: Collapsed sidebar width (8-48px)
+-   **Line thickness**: Heading indicator line thickness (1-8px)
+-   **Animation duration**: Transition speed (50-500ms)
 
-### Advanced Settings
+### Advanced
 
--   **Parse HTML elements**: Enable parsing of HTML heading tags
--   **Custom regex pattern**: Define your own heading detection pattern.
+-   **Parse HTML elements**: Strip HTML tags from headings
+-   **Custom regex**: Define custom heading patterns with named groups
 
 > [!NOTE] 
 > **The parser processes heading text according to settings priority:**
@@ -61,7 +68,7 @@ Access settings via **Settings → Community Plugins → Floating Headings**
 
 ### Custom Regex
 
-Custom Regex patterns can be used to parse and extract heading text from headers. By default, the panel shows the raw text of the heading. If you want to extract specific text, you can define a custom regex pattern, using a named capture group `heading_text`.
+Custom Regex patterns can be used to parse and extract heading text from headers. By default, the panel shows the raw text of the heading. If you want to extract specific text, you can define a custom regex pattern, using a named capture group heading_text.
 
 #### Custom Regex Examples
 
@@ -77,18 +84,6 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ```
 -   **Extracted heading text:** `Some Page`
 
-**Span with link**
-
--   **Regex pattern:**
-    ```regex
-    /^(#{1,6})\s+<span[^>]*>\[\[.*?\]\]\s+(?<heading_text>.*?)<\/span>$/
-    ```
--   **Example match:**
-    ```
-    ## <span style="color:red">[[note]] Red Heading</span>
-    ```
--   **Extracted heading text:** `Red Heading`
-
 **Inline LaTeX**
 
 -   **Regex pattern:**
@@ -100,18 +95,6 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ## $O^n$
     ```
 -   **Extracted heading text:** `O^n`
-
-**Bold heading**
-
--   **Regex pattern:**
-    ```regex
-    /^(#{1,6})\s+\*\*(?<heading_text>.+?)\*\*\s*$/
-    ```
--   **Example match:**
-    ```
-    ### **Bold Heading**
-    ```
--   **Extracted heading text:** `Bold Heading`
 
 **List heading**
 
@@ -125,97 +108,67 @@ Custom Regex patterns can be used to parse and extract heading text from headers
     ```
 -   **Extracted heading text:** `List Heading`
 
-## Theming
+## Customization
 
-### Obsidian CSS Variables
+This plugin uses Obsidian's built-in CSS variables for consistent theming.
 
-The plugin uses Obsidian's built-in CSS variables for consistent theming:
-
--   `--text-normal`: Heading text color.
--   `--text-muted`: Collapsed line indicators and vertical lines.
--   `--text-accent`: Active heading highlight color.
--   `--background-primary`: Panel background (fallback).
--   `--background-modifier-border`: Panel border.
--   `--background-modifier-hover`: Hover effects.
--   `--color-accent`: Active heading color.
-
-### Plugin-Specific CSS Variables
+### CSS Variables
 
 Override these custom properties to change the appearance of the plugin:
 
--   `--floating-headings-collapsed-width`: Width of the collapsed sidebar (default: 16px).
--   `--floating-headings-panel-width`: Width of the expanded panel (default: 240px).
--   `--floating-headings-panel-max-height`: Maximum height of the panel (default: 400px).
--   `--floating-headings-panel-bg`: Custom panel background color.
--   `--floating-headings-line-color`: Color of collapsed heading lines.
--   `--floating-headings-line-thickness`: Thickness of collapsed heading lines (default: 3px).
--   `--floating-headings-animation-duration`: Animation speed in milliseconds (default: 150ms).
+```css
+--floating-headings-collapsed-width: 16px;
+--floating-headings-panel-width: 240px;
+--floating-headings-panel-max-height: 400px;
+--floating-headings-panel-bg: var(--background-primary);
+--floating-headings-line-color: var(--text-muted);
+--floating-headings-line-thickness: 3px;
+--floating-headings-animation-duration: 150ms;
+--floating-headings-vertical-position: 50%;
+```
 
-### Custom CSS
+### CSS Classes
 
-Add custom styles in your `snippets` folder:
+Add custom styles in your snippets folder:
 
 ```css
-/* Customize the floating headings container */
 .floating-headings-container {
-	/* Your custom styles */
+	/* Main container */
 }
 
-/* Style the collapsed sidebar */
 .floating-headings-collapsed {
-	/* Your custom styles */
+	/* Collapsed sidebar */
 }
 
-/* Style the expanded panel */
 .floating-headings-expanded {
-	/* Your custom styles */
+	/* Expanded panel */
 }
 
-/* Style individual heading items */
 .floating-heading-item {
-	/* Your custom styles */
+	/* Individual headings */
 }
 
-/* Level-specific styling */
-.floating-heading-item[data-level="1"] {
-	/* H1 heading styles */
-}
-
-.floating-heading-item[data-level="2"] {
-	/* H2 heading styles */
-}
-
-/* Active heading highlight */
 .floating-heading-item.active {
-	/* Active heading styles */
+	/* Current heading */
+}
+
+.floating-heading-item[data-level="1"] {
+	/* H1 headings */
 }
 ```
 
-### Reporting Issues
+## Development
 
-Found a bug or have a feature request? Please create an issue on the [GitHub repository](https://github.com/k0src/Floating-Headings-Obsidian-Plugin/issues).
+```bash
+npm install    # Install dependencies
+npm run dev    # Development mode
+npm run build  # Production build
+```
 
 ## Contributing
 
-Contributions are welcome. Please feel free to submit pull requests or create issues for bugs and feature requests.
-
-### Development Setup
-
-1. Clone the repository.
-2. Run `npm install` to install dependencies.
-3. Run `npm run dev` for development mode.
-4. Run `npm run build` for production build.
+Issues and pull requests welcome on [GitHub](https://github.com/k0src/Floating-Headings-Obsidian-Plugin).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## To-Do
-
--   [x] Improved Regex support
--   [x] Dynamic indentation
--   [x] Collapsible heading groups
--   [x] Filter input
--   [x] Lock open/close hotkey
--   [x] Support for multiple Regex patterns
--   [ ] Finalize styles
+MIT License - see [LICENSE](LICENSE) file.
