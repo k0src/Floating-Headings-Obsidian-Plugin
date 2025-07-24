@@ -214,7 +214,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 -   [x] Improved Regex support
 -   [x] Dynamic indentation
--   [ ] Draw bullets and lines
 -   [x] Collapsible heading groups
 -   [x] Filter input
 -   [x] Lock open/close hotkey
