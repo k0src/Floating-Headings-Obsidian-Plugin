@@ -751,25 +751,6 @@ export class FloatingHeadingsUIManager {
 		if (this.isExpanded) {
 			this.updateExpandedView();
 		}
-
-		this.updatePanelPinning();
-	}
-
-	private updatePanelPinning() {
-		if (!this.containerElement) return;
-
-		if (this.isFiltering) {
-			this.containerElement.addClass("filtering");
-			this.containerElement.addClass("no-transition");
-		} else {
-			this.containerElement.removeClass("filtering");
-
-			requestAnimationFrame(() => {
-				if (this.containerElement) {
-					this.containerElement.removeClass("no-transition");
-				}
-			});
-		}
 	}
 
 	private clearFilter() {
@@ -784,11 +765,7 @@ export class FloatingHeadingsUIManager {
 			) as HTMLElement;
 			clearIcon?.addClass("hidden");
 
-			if (!this.isExpanded) {
-				setTimeout(() => {
-					this.updatePanelPinning();
-				}, this.plugin.settings.animationDuration);
-			} else {
+			if (this.isExpanded) {
 				this.applyFilter();
 			}
 		}
