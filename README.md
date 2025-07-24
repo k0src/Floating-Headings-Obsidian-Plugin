@@ -216,7 +216,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   [x] Dynamic indentation
 -   [ ] Draw bullets and lines
 -   [ ] Collapsible heading groups
--   [ ] Filter input
+-   [x] Filter input
 -   [ ] Lock open/close hotkey
 -   [x] Support for multiple Regex patterns
 -   [ ] Per-note settings with YAML frontmatter

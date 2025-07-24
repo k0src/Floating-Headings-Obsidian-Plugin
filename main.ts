@@ -29,6 +29,15 @@ export default class FloatingHeadingsPlugin extends Plugin {
 		);
 		this.eventBinder = new EventBinder(this, this.stateManager);
 
+		// Add command to toggle panel lock
+		this.addCommand({
+			id: "toggle-panel-lock",
+			name: "Toggle panel lock",
+			callback: () => {
+				this.ui?.togglePanelLock();
+			},
+		});
+
 		this.eventBinder.bindAllEvents();
 
 		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);

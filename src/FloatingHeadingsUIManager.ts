@@ -11,6 +11,7 @@ export class FloatingHeadingsUIManager {
 	private isHovered: boolean = false;
 	private isExpanded: boolean = false;
 	private hoverTimeout: number | null = null;
+	private isLocked: boolean = false;
 
 	private expandedItemHeight: number = 0;
 	private expandedPadding: number = 0;
@@ -32,6 +33,7 @@ export class FloatingHeadingsUIManager {
 		this.collapsedSidebar = this.createCollapsedSidebar();
 		this.expandedPanel = this.createExpandedPanel();
 		this.isExpanded = false;
+		this.isLocked = false;
 
 		this.filterQuery = "";
 		this.filteredHeadings = [];
@@ -107,6 +109,8 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private onMouseEnter() {
+		if (this.isLocked) return;
+
 		this.isHovered = true;
 
 		if (this.hoverTimeout) {
@@ -118,6 +122,8 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private onMouseLeave() {
+		if (this.isLocked) return;
+
 		this.hoverTimeout = window.setTimeout(() => {
 			this.isHovered = false;
 			this.hideExpandedPanel();
@@ -409,6 +415,24 @@ export class FloatingHeadingsUIManager {
 		}
 	}
 
+	togglePanelLock() {
+		this.isLocked = !this.isLocked;
+
+		if (this.isLocked) {
+			if (!this.isExpanded) {
+				this.showExpandedPanel();
+			}
+			if (this.hoverTimeout) {
+				clearTimeout(this.hoverTimeout);
+				this.hoverTimeout = null;
+			}
+		} else {
+			if (!this.isHovered) {
+				this.hideExpandedPanel();
+			}
+		}
+	}
+
 	cleanup() {
 		if (this.hoverTimeout) {
 			clearTimeout(this.hoverTimeout);
@@ -423,6 +447,7 @@ export class FloatingHeadingsUIManager {
 		this.expandedPanel = null;
 		this.isHovered = false;
 		this.isExpanded = false;
+		this.isLocked = false;
 
 		this.filterInput = null;
 		this.filterContainer = null;
