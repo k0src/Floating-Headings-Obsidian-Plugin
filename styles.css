@@ -104,6 +104,8 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	display: flex;
+	align-items: center;
 }
 
 .floating-heading-item:hover {
@@ -146,7 +148,8 @@
 .floating-heading-content {
 	display: flex;
 	align-items: center;
-	width: 100%;
+	flex: 1;
+	min-width: 0;
 }
 
 .floating-heading-collapse-icon {
@@ -161,6 +164,18 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.floating-heading-content::before {
+	content: "";
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+	margin-right: var(--size-2-1);
+	flex-shrink: 0;
+}
+
+.floating-heading-item.has-collapse-icon .floating-heading-content::before {
+	display: none;
 }
 
 .floating-heading-collapse-icon:hover {

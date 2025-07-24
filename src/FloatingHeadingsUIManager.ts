@@ -463,7 +463,10 @@ export class FloatingHeadingsUIManager {
 
 		const content = DOMHelper.createDiv("floating-heading-content");
 
+		// Add collapse icon if heading has children
 		if (hasChildren) {
+			item.classList.add("has-collapse-icon");
+
 			const collapseIcon = DOMHelper.createDiv(
 				"floating-heading-collapse-icon"
 			);
