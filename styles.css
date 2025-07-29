@@ -1,3 +1,7 @@
+.relative-position {
+	position: relative !important;
+}
+
 .floating-headings-container {
 	user-select: none;
 	font-family: var(--font-interface);
