@@ -35,6 +35,7 @@
 	transition: all var(--floating-headings-animation-duration, 150ms)
 		ease-in-out;
 	width: var(--floating-headings-collapsed-width, 16px);
+	height: var(--floating-headings-collapsed-height, auto);
 }
 
 .floating-headings-collapsed.hidden {

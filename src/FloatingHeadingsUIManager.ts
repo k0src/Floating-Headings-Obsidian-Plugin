@@ -219,7 +219,7 @@ export class FloatingHeadingsUIManager {
 	}
 
 	updateCollapsedView() {
-		if (!this.collapsedSidebar) return;
+		if (!this.collapsedSidebar || !this.containerElement) return;
 
 		this.collapsedSidebar.empty();
 
@@ -249,7 +249,10 @@ export class FloatingHeadingsUIManager {
 			containerMaxHeight
 		);
 
-		this.collapsedSidebar.style.height = `${panelHeight}px`;
+		this.containerElement.style.setProperty(
+			"--floating-headings-collapsed-height",
+			`${panelHeight}px`
+		);
 
 		fittingHeadings.forEach((heading, index) => {
 			const line = this.createHeadingLine(heading, index);
