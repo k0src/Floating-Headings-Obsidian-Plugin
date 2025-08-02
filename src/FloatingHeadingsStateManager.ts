@@ -253,7 +253,6 @@ export class FloatingHeadingsStateManager {
 
 	private ensureRelativePositioning(element: HTMLElement): void {
 		const computedStyle = window.getComputedStyle(element);
-		console.log(computedStyle);
 		if (computedStyle.position === "static") {
 			element.classList.add("relative-position");
 		}
