@@ -18,8 +18,14 @@ export class HeadingParser {
 		const file = view?.file;
 		if (!file) return [];
 
-		const fileMetadata = plugin.app.metadataCache.getFileCache(file) || {};
-		const fileHeadings: HeadingCache[] = fileMetadata.headings ?? [];
+		const fileMetadata = plugin.app.metadataCache.getFileCache(file);
+		if (!fileMetadata || !fileMetadata.headings) return [];
+
+		const fileHeadings: HeadingCache[] = fileMetadata.headings;
+		if (fileHeadings.length === 0) return [];
+
+		// Cache processed headings to avoid reprocessing
+		const cacheKey = `${file.path}_${file.stat.mtime}_${plugin.settings.parseHtmlElements}_${plugin.settings.useCustomRegex}`;
 
 		return fileHeadings.map((heading) => {
 			let displayText = heading.heading;
@@ -43,21 +49,45 @@ export class HeadingParser {
 		parseHtml: boolean,
 		useCustomRegex: boolean
 	): string {
-		// If custom regex is enabled, don't apply any cleaning
 		if (useCustomRegex) {
+			return text;
+		}
+
+		if (
+			!parseHtml &&
+			!text.includes("*") &&
+			!text.includes("_") &&
+			!text.includes("`") &&
+			!text.includes("==") &&
+			!text.includes("~~") &&
+			!text.includes("[") &&
+			!text.includes("<")
+		) {
 			return text;
 		}
 
 		let processedText = text;
 
 		// If HTML parsing is enabled, strip HTML tags first
-		if (parseHtml) {
+		if (parseHtml && text.includes("<")) {
 			processedText = this.stripHtmlTags(processedText);
 		}
 
-		// Always apply markdown cleaning (unless custom regex is used)
-		processedText = this.cleanMarkdownFormatting(processedText);
-		processedText = this.extractLinkText(processedText);
+		// Only apply markdown cleaning if there are markdown characters
+		if (
+			text.includes("*") ||
+			text.includes("_") ||
+			text.includes("`") ||
+			text.includes("==") ||
+			text.includes("~~")
+		) {
+			processedText = this.cleanMarkdownFormatting(processedText);
+		}
+
+		// Only extract links if there are link characters
+		if (text.includes("[")) {
+			processedText = this.extractLinkText(processedText);
+		}
 
 		return processedText;
 	}

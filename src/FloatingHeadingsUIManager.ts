@@ -24,6 +24,9 @@ export class FloatingHeadingsUIManager {
 
 	private collapsedHeadings: Set<string> = new Set();
 
+	private lastRenderedCollapsedHeadings: HeadingInfo[] = [];
+	private lastRenderedExpandedHeadings: HeadingInfo[] = [];
+	private lastCollapsedHeight: string = "";
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
 	}
@@ -50,10 +53,8 @@ export class FloatingHeadingsUIManager {
 		this.updateCSSProperties();
 		this.calculateDimensionsFromStyles();
 		this.updateCollapsedView();
-		this.updateExpandedView();
 	}
 
-	/* Calcuate size of panel to set height of collasped panel */
 	private calculateDimensionsFromStyles() {
 		if (!this.expandedPanel || !this.containerElement) return;
 
@@ -143,7 +144,9 @@ export class FloatingHeadingsUIManager {
 		this.expandedPanel.classList.add("visible");
 		this.isExpanded = true;
 
+		// Force update on first expansion to ensure content is shown
 		if (!wasExpanded) {
+			this.lastRenderedExpandedHeadings = [];
 			this.updateExpandedView();
 			this.updateActiveHeading();
 			this.applyScrollPosition();
@@ -221,8 +224,6 @@ export class FloatingHeadingsUIManager {
 	updateCollapsedView() {
 		if (!this.collapsedSidebar || !this.containerElement) return;
 
-		this.collapsedSidebar.empty();
-
 		const headings = this.plugin.getCurrentHeadings();
 		const settings = this.plugin.settings;
 
@@ -249,24 +250,50 @@ export class FloatingHeadingsUIManager {
 			containerMaxHeight
 		);
 
-		this.containerElement.style.setProperty(
-			"--floating-headings-collapsed-height",
-			`${panelHeight}px`
-		);
+		const newHeightProperty = `${panelHeight}px`;
 
-		fittingHeadings.forEach((heading, index) => {
-			const line = this.createHeadingLine(heading, index);
-			this.collapsedSidebar!.appendChild(line);
+		// Only update if height or headings changed
+		if (
+			this.lastCollapsedHeight !== newHeightProperty ||
+			!this.areHeadingsEqual(
+				this.lastRenderedCollapsedHeadings,
+				fittingHeadings
+			)
+		) {
+			this.containerElement.style.setProperty(
+				"--floating-headings-collapsed-height",
+				newHeightProperty
+			);
+			this.lastCollapsedHeight = newHeightProperty;
+
+			// Only rebuild DOM if headings actually changed
+			this.collapsedSidebar.empty();
+			fittingHeadings.forEach((heading, index) => {
+				const line = this.createHeadingLine(heading, index);
+				this.collapsedSidebar!.appendChild(line);
+			});
+
+			this.lastRenderedCollapsedHeadings = [...fittingHeadings];
+		}
+	}
+
+	private areHeadingsEqual(
+		headings1: HeadingInfo[],
+		headings2: HeadingInfo[]
+	): boolean {
+		if (headings1.length !== headings2.length) return false;
+		return headings1.every((h1, index) => {
+			const h2 = headings2[index];
+			return (
+				h1.text === h2.text &&
+				h1.level === h2.level &&
+				h1.line === h2.line
+			);
 		});
 	}
 
 	updateExpandedView() {
 		if (!this.expandedPanel) return;
-
-		const headingItems = this.expandedPanel.querySelectorAll(
-			".floating-heading-item"
-		);
-		headingItems.forEach((item) => item.remove());
 
 		const allHeadings = this.plugin.getCurrentHeadings();
 		let headingsToShow = allHeadings;
@@ -279,15 +306,37 @@ export class FloatingHeadingsUIManager {
 			headingsToShow = this.filteredHeadings;
 		}
 
+		// Only rebuild if headings actually changed, but always rebuild on first expansion or when filtering
+		if (
+			this.isExpanded &&
+			!this.isFiltering &&
+			this.lastRenderedExpandedHeadings.length > 0 &&
+			this.areHeadingsEqual(
+				this.lastRenderedExpandedHeadings,
+				headingsToShow
+			)
+		) {
+			this.updateActiveHeading();
+			return;
+		}
+
+		const headingItems = this.expandedPanel.querySelectorAll(
+			".floating-heading-item"
+		);
+		headingItems.forEach((item) => item.remove());
+
 		const dynamicLevels = this.calculateDynamicLevels(headingsToShow);
 
+		// Lookup map
+		const headingIndexMap = new Map<string, number>();
+		allHeadings.forEach((h, idx) => {
+			const key = `${h.text}_${h.line}_${h.level}`;
+			headingIndexMap.set(key, idx);
+		});
+
 		headingsToShow.forEach((heading, index) => {
-			const originalIndex = allHeadings.findIndex(
-				(h, idx) =>
-					h.text === heading.text &&
-					h.line === heading.line &&
-					h.level === heading.level
-			);
+			const headingKey = `${heading.text}_${heading.line}_${heading.level}`;
+			const originalIndex = headingIndexMap.get(headingKey) ?? index;
 
 			const hasChildren = this.doesHeadingHaveChildren(
 				headingsToShow,
@@ -297,7 +346,7 @@ export class FloatingHeadingsUIManager {
 
 			const item = this.createExpandedHeadingItem(
 				heading,
-				originalIndex !== -1 ? originalIndex : index,
+				originalIndex,
 				dynamicLevels[index],
 				hasChildren
 			);
@@ -306,6 +355,9 @@ export class FloatingHeadingsUIManager {
 
 		this.applyInitialCollapsedStates();
 		this.updateActiveHeading();
+
+		// Update the last rendered headings
+		this.lastRenderedExpandedHeadings = [...headingsToShow];
 	}
 
 	private calculateDynamicLevels(headings: HeadingInfo[]): number[] {
@@ -666,14 +718,21 @@ export class FloatingHeadingsUIManager {
 		this.isFiltering = false;
 
 		this.collapsedHeadings.clear();
-	}
 
+		this.lastRenderedCollapsedHeadings = [];
+		this.lastRenderedExpandedHeadings = [];
+		this.lastCollapsedHeight = "";
+	}
 	refresh() {
+		// Only update CSS properties and views
 		this.updateCSSProperties();
 		if (this.containerElement && this.containerElement.parentElement) {
-			const parent = this.containerElement.parentElement;
-			this.cleanup();
-			this.mount(parent);
+			this.calculateDimensionsFromStyles();
+			this.updateCollapsedView();
+			// Only update expanded view if it's currently expanded
+			if (this.isExpanded) {
+				this.updateExpandedView();
+			}
 		}
 	}
 

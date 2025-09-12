@@ -13,6 +13,8 @@ export class FloatingHeadingsStateManager {
 	private headingsCache: CacheManager<HeadingInfo[]>;
 	private timeoutManager: TimeoutManager;
 	private ui: FloatingHeadingsUIManager;
+	private lastContentHash: string = "";
+	private lastHeadingsHash: string = "";
 
 	constructor(
 		app: App,
@@ -58,13 +60,17 @@ export class FloatingHeadingsStateManager {
 	}
 
 	handleEditorChange(): void {
+		// Only update if we're not already processing
 		this.timeoutManager.set(
 			"update",
 			() => {
-				this.headingsCache.clear();
-				this.updateHeadings();
+				// Only clear cache and update if there might be heading changes
+				if (this.mightContainHeadingChanges()) {
+					this.headingsCache.clear();
+					this.updateHeadings();
+				}
 			},
-			150
+			500
 		);
 	}
 
@@ -73,12 +79,36 @@ export class FloatingHeadingsStateManager {
 			this.timeoutManager.set(
 				"fileUpdate",
 				() => {
-					this.headingsCache.clear();
-					this.updateHeadings();
+					// Only update if there might be heading changes
+					if (this.mightContainHeadingChanges()) {
+						this.headingsCache.clear();
+						this.updateHeadings();
+					}
 				},
-				300
+				800
 			);
 		}
+	}
+
+	private mightContainHeadingChanges(): boolean {
+		if (!this.activeMarkdownView?.editor) return true;
+
+		const editor = this.activeMarkdownView.editor;
+		const cursor = editor.getCursor();
+		const currentLine = editor.getLine(cursor.line);
+		const previousLine =
+			cursor.line > 0 ? editor.getLine(cursor.line - 1) : "";
+		const nextLine =
+			cursor.line < editor.lineCount() - 1
+				? editor.getLine(cursor.line + 1)
+				: "";
+
+		const headingPattern = /^\s*#{1,6}\s/;
+		return (
+			headingPattern.test(currentLine) ||
+			headingPattern.test(previousLine) ||
+			headingPattern.test(nextLine)
+		);
 	}
 
 	handleMetadataChanged(): void {
@@ -97,11 +127,23 @@ export class FloatingHeadingsStateManager {
 		const file = this.activeMarkdownView.file;
 		if (!file) return;
 
+		// Content hash check to avoid unnecessary processing
+		const currentContentHash = this.generateContentHash(file);
+		if (currentContentHash === this.lastContentHash) {
+			return;
+		}
+
 		const cacheKey = this.generateCacheKey(file);
 		const cached = this.getCachedHeadings(cacheKey);
 
 		if (cached) {
+			const headingsHash = this.hashHeadings(cached.headings);
+			if (headingsHash === this.lastHeadingsHash) {
+				return; // Headings haven't changed, skip UI update
+			}
+
 			this.currentHeadings = cached.headings;
+			this.lastHeadingsHash = headingsHash;
 			this.refreshUI();
 			return;
 		}
@@ -111,6 +153,16 @@ export class FloatingHeadingsStateManager {
 		} else {
 			this.processStandardHeadings(file, cacheKey);
 		}
+
+		this.lastContentHash = currentContentHash;
+	}
+
+	private generateContentHash(file: TFile): string {
+		return `${file.stat.mtime}_${file.stat.size}`;
+	}
+
+	private hashHeadings(headings: HeadingInfo[]): string {
+		return headings.map((h) => `${h.text}_${h.level}_${h.line}`).join("|");
 	}
 
 	mountUI(): void {
@@ -196,7 +248,13 @@ export class FloatingHeadingsStateManager {
 		headings: HeadingInfo[],
 		cacheKey: string
 	): void {
+		const headingsHash = this.hashHeadings(headings);
+		if (headingsHash === this.lastHeadingsHash) {
+			return;
+		}
+
 		this.currentHeadings = headings;
+		this.lastHeadingsHash = headingsHash;
 		this.cacheHeadings(cacheKey, headings);
 		this.refreshUI();
 	}
@@ -290,5 +348,7 @@ export class FloatingHeadingsStateManager {
 		this.timeoutManager.clearAll();
 		this.cleanupUI();
 		this.headingsCache.clear();
+		this.lastContentHash = "";
+		this.lastHeadingsHash = "";
 	}
 }
