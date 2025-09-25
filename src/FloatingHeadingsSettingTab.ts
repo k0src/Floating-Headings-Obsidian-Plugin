@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting, MarkdownView } from "obsidian";
 import type FloatingHeadingsPlugin from "../main";
 import { HeadingParser } from "./HeadingParser";
+import { DEFAULT_SETTINGS } from "./types";
 
 export class FloatingHeadingsSettingTab extends PluginSettingTab {
 	plugin: FloatingHeadingsPlugin;
@@ -57,21 +58,6 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Sidebar position")
-			.setDesc("Choose which side of the screen the sidebar appears on.")
-			.addDropdown((dropdown) =>
-				dropdown
-					.addOption("right", "Right")
-					.addOption("left", "Left")
-					.setValue(this.plugin.settings.sidebarPosition)
-					.onChange(async (value: "left" | "right") => {
-						this.plugin.settings.sidebarPosition = value;
-						await this.plugin.saveSettings();
-						this.plugin.ui.refresh();
-					})
-			);
-
-		new Setting(containerEl)
 			.setName("Vertical position")
 			.setDesc("Vertical position of the sidebar (0%-100%).")
 			.addSlider((slider) =>
@@ -83,6 +69,18 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.verticalPosition = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
+					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.verticalPosition =
+							DEFAULT_SETTINGS.verticalPosition;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+						this.display();
 					})
 			);
 
@@ -99,6 +97,19 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.clearCache();
 						this.plugin.updateHeadings();
+					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.maxHeadingLevel =
+							DEFAULT_SETTINGS.maxHeadingLevel;
+						await this.plugin.saveSettings();
+						this.plugin.clearCache();
+						this.plugin.updateHeadings();
+						this.display();
 					})
 			);
 
@@ -117,6 +128,18 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.panelMaxHeight =
+							DEFAULT_SETTINGS.panelMaxHeight;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+						this.display();
+					})
 			);
 
 		new Setting(containerEl)
@@ -131,6 +154,18 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.panelWidth = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
+					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.panelWidth =
+							DEFAULT_SETTINGS.panelWidth;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+						this.display();
 					})
 			);
 
@@ -162,6 +197,18 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.collapsedWidth =
+							DEFAULT_SETTINGS.collapsedWidth;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+						this.display();
+					})
 			);
 
 		new Setting(containerEl)
@@ -177,6 +224,18 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.lineThickness =
+							DEFAULT_SETTINGS.lineThickness;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+						this.display();
+					})
 			);
 
 		new Setting(containerEl)
@@ -191,6 +250,18 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.animationDuration = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
+					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.animationDuration =
+							DEFAULT_SETTINGS.animationDuration;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+						this.display();
 					})
 			);
 
@@ -210,6 +281,18 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						if (value && this.plugin.settings.useCustomRegex) {
 							this.plugin.settings.useCustomRegex = false;
 						}
+						await this.plugin.saveSettings();
+						this.plugin.updateHeadings();
+						this.display();
+					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.parseHtmlElements =
+							DEFAULT_SETTINGS.parseHtmlElements;
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();
@@ -238,6 +321,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						) {
 							this.plugin.settings.customRegexPatterns = [""];
 						}
+						await this.plugin.saveSettings();
+						this.plugin.updateHeadings();
+						this.display();
+					})
+			)
+			.addExtraButton((button) =>
+				button
+					.setIcon("rotate-ccw")
+					.setTooltip("Restore default")
+					.onClick(async () => {
+						this.plugin.settings.useCustomRegex =
+							DEFAULT_SETTINGS.useCustomRegex;
+						this.plugin.settings.customRegexPatterns = [
+							...DEFAULT_SETTINGS.customRegexPatterns,
+						];
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();
