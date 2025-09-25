@@ -97,6 +97,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.maxHeadingLevel = value;
 						await this.plugin.saveSettings();
+						this.plugin.clearCache();
 						this.plugin.updateHeadings();
 					})
 			);

@@ -176,7 +176,7 @@ export class FloatingHeadingsStateManager {
 	}
 
 	private generateCacheKey(file: TFile): string {
-		return `${file.path}_${file.stat.mtime}`;
+		return `${file.path}_${file.stat.mtime}_${this.settings.maxHeadingLevel}`;
 	}
 
 	private getCachedHeadings(
@@ -342,6 +342,12 @@ export class FloatingHeadingsStateManager {
 
 	isReadingMode(): boolean {
 		return this.currentMode === "preview" || !this.currentMode;
+	}
+
+	clearCache(): void {
+		this.headingsCache.clear();
+		this.lastContentHash = "";
+		this.lastHeadingsHash = "";
 	}
 
 	cleanup(): void {

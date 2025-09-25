@@ -73,6 +73,10 @@ export default class FloatingHeadingsPlugin extends Plugin {
 		this.stateManager?.updateHeadings();
 	}
 
+	clearCache() {
+		this.stateManager?.clearCache();
+	}
+
 	handleEnableDisable() {
 		if (this.settings.enabled) {
 			const activeView =

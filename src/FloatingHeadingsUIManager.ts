@@ -12,6 +12,8 @@ export class FloatingHeadingsUIManager {
 	private isExpanded: boolean = false;
 	private hoverTimeout: number | null = null;
 	private isLocked: boolean = false;
+	private dynamicStyles: HTMLStyleElement | null = null;
+	private dynamicStyleId: string;
 
 	private expandedItemHeight: number = 0;
 	private expandedPadding: number = 0;
@@ -29,11 +31,15 @@ export class FloatingHeadingsUIManager {
 	private lastCollapsedHeight: string = "";
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
+		this.dynamicStyleId = `floating-headings-dynamic-${Math.random()
+			.toString(36)
+			.slice(2, 9)}`;
 	}
 
 	mount(parentElement: HTMLElement) {
 		this.cleanup();
 
+		this.createDynamicStyles();
 		this.containerElement = this.createContainer();
 		this.collapsedSidebar = this.createCollapsedSidebar();
 		this.expandedPanel = this.createExpandedPanel();
@@ -76,8 +82,58 @@ export class FloatingHeadingsUIManager {
 		this.expandedPadding = size42 * 2;
 	}
 
+	private createDynamicStyles(): void {
+		this.removeDynamicStyles();
+
+		this.dynamicStyles = document.createElement("style");
+		this.dynamicStyles.id = this.dynamicStyleId;
+
+		document.head.appendChild(this.dynamicStyles);
+	}
+
+	private removeDynamicStyles(): void {
+		if (this.dynamicStyles) {
+			this.dynamicStyles.remove();
+			this.dynamicStyles = null;
+		} else {
+			const existingSheet = document.getElementById(this.dynamicStyleId);
+			if (existingSheet) {
+				existingSheet.remove();
+			}
+		}
+	}
+
+	private updateDynamicCSS(collapsedHeight?: string): void {
+		if (!this.containerElement) return;
+
+		const settings = this.plugin.settings;
+		const heightProperty = collapsedHeight || this.lastCollapsedHeight;
+
+		const dynamicCSS = `
+			#${this.containerElement.id} {
+				--floating-headings-collapsed-width: ${settings.collapsedWidth}px;
+				--floating-headings-panel-width: ${settings.panelWidth}px;
+				--floating-headings-panel-max-height: ${settings.panelMaxHeight}px;
+				--floating-headings-animation-duration: ${settings.animationDuration}ms;
+				--floating-headings-vertical-position: ${100 - settings.verticalPosition}%;
+				--floating-headings-line-thickness: ${settings.lineThickness}px;
+				${
+					heightProperty
+						? `--floating-headings-collapsed-height: ${heightProperty};`
+						: ""
+				}
+			}
+		`;
+
+		if (this.dynamicStyles) {
+			this.dynamicStyles.textContent = dynamicCSS;
+		}
+	}
+
 	private createContainer(): HTMLElement {
 		const container = DOMHelper.createDiv("floating-headings-container");
+
+		container.id = `floating-headings-${this.dynamicStyleId}`;
 
 		if (this.plugin.settings.sidebarPosition === "left") {
 			container.addClass("position-left");
@@ -260,10 +316,7 @@ export class FloatingHeadingsUIManager {
 				fittingHeadings
 			)
 		) {
-			this.containerElement.style.setProperty(
-				"--floating-headings-collapsed-height",
-				newHeightProperty
-			);
+			this.updateDynamicCSS(newHeightProperty);
 			this.lastCollapsedHeight = newHeightProperty;
 
 			// Only rebuild DOM if headings actually changed
@@ -701,6 +754,8 @@ export class FloatingHeadingsUIManager {
 			this.hoverTimeout = null;
 		}
 
+		this.removeDynamicStyles();
+
 		if (this.containerElement) {
 			this.containerElement.remove();
 			this.containerElement = null;
@@ -724,15 +779,42 @@ export class FloatingHeadingsUIManager {
 		this.lastCollapsedHeight = "";
 	}
 	refresh() {
-		// Only update CSS properties and views
 		this.updateCSSProperties();
 		if (this.containerElement && this.containerElement.parentElement) {
 			this.calculateDimensionsFromStyles();
+			this.updateExpandedPanelStructure();
 			this.updateCollapsedView();
-			// Only update expanded view if it's currently expanded
 			if (this.isExpanded) {
 				this.updateExpandedView();
 			}
+		}
+	}
+
+	private updateExpandedPanelStructure(): void {
+		if (!this.expandedPanel) return;
+
+		const hasFilterContainer =
+			this.expandedPanel.querySelector(
+				".floating-headings-filter-container"
+			) !== null;
+		const shouldHaveFilter = this.plugin.settings.enableFilter;
+
+		if (hasFilterContainer && !shouldHaveFilter) {
+			const filterContainer = this.expandedPanel.querySelector(
+				".floating-headings-filter-container"
+			);
+			if (filterContainer) {
+				filterContainer.remove();
+			}
+			this.filterInput = null;
+			this.filterContainer = null;
+			this.clearFilter();
+		} else if (!hasFilterContainer && shouldHaveFilter) {
+			const filterContainer = this.createFilterContainer();
+			this.expandedPanel.insertBefore(
+				filterContainer,
+				this.expandedPanel.firstChild
+			);
 		}
 	}
 
@@ -846,30 +928,6 @@ export class FloatingHeadingsUIManager {
 			settings.sidebarPosition === "left"
 		);
 
-		this.containerElement.style.setProperty(
-			"--floating-headings-collapsed-width",
-			`${settings.collapsedWidth}px`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-panel-width",
-			`${settings.panelWidth}px`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-panel-max-height",
-			`${settings.panelMaxHeight}px`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-animation-duration",
-			`${settings.animationDuration}ms`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-vertical-position",
-			`${100 - settings.verticalPosition}%`
-		);
-
-		this.containerElement.style.setProperty(
-			"--floating-headings-line-thickness",
-			`${settings.lineThickness}px`
-		);
+		this.updateDynamicCSS();
 	}
 }
