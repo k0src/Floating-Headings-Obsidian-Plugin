@@ -37,10 +37,9 @@ export class FloatingHeadingsStateManager {
 			return;
 		}
 
-		const view = leaf.view;
-		if (view instanceof MarkdownView) {
-			this.activeMarkdownView = view;
-			this.currentMode = view.getMode?.() || null;
+		if (leaf.view instanceof MarkdownView) {
+			this.activeMarkdownView = leaf.view;
+			this.currentMode = leaf.view.getMode?.() || null;
 			this.updateHeadings();
 			this.mountUI();
 		} else {
@@ -60,11 +59,9 @@ export class FloatingHeadingsStateManager {
 	}
 
 	handleEditorChange(): void {
-		// Only update if we're not already processing
 		this.timeoutManager.set(
 			"update",
 			() => {
-				// Only clear cache and update if there might be heading changes
 				if (this.mightContainHeadingChanges()) {
 					this.headingsCache.clear();
 					this.updateHeadings();
@@ -79,7 +76,6 @@ export class FloatingHeadingsStateManager {
 			this.timeoutManager.set(
 				"fileUpdate",
 				() => {
-					// Only update if there might be heading changes
 					if (this.mightContainHeadingChanges()) {
 						this.headingsCache.clear();
 						this.updateHeadings();
@@ -91,24 +87,20 @@ export class FloatingHeadingsStateManager {
 	}
 
 	private mightContainHeadingChanges(): boolean {
-		if (!this.activeMarkdownView?.editor) return true;
+		const editor = this.activeMarkdownView?.editor;
+		if (!editor) return true;
 
-		const editor = this.activeMarkdownView.editor;
 		const cursor = editor.getCursor();
-		const currentLine = editor.getLine(cursor.line);
-		const previousLine =
-			cursor.line > 0 ? editor.getLine(cursor.line - 1) : "";
-		const nextLine =
+		const lines = [
+			cursor.line > 0 ? editor.getLine(cursor.line - 1) : "",
+			editor.getLine(cursor.line),
 			cursor.line < editor.lineCount() - 1
 				? editor.getLine(cursor.line + 1)
-				: "";
+				: "",
+		];
 
 		const headingPattern = /^\s*#{1,6}\s/;
-		return (
-			headingPattern.test(currentLine) ||
-			headingPattern.test(previousLine) ||
-			headingPattern.test(nextLine)
-		);
+		return lines.some((line) => headingPattern.test(line));
 	}
 
 	handleMetadataChanged(): void {
@@ -127,20 +119,15 @@ export class FloatingHeadingsStateManager {
 		const file = this.activeMarkdownView.file;
 		if (!file) return;
 
-		// Content hash check to avoid unnecessary processing
 		const currentContentHash = this.generateContentHash(file);
-		if (currentContentHash === this.lastContentHash) {
-			return;
-		}
+		if (currentContentHash === this.lastContentHash) return;
 
 		const cacheKey = this.generateCacheKey(file);
 		const cached = this.getCachedHeadings(cacheKey);
 
 		if (cached) {
 			const headingsHash = this.hashHeadings(cached.headings);
-			if (headingsHash === this.lastHeadingsHash) {
-				return; // Headings haven't changed, skip UI update
-			}
+			if (headingsHash === this.lastHeadingsHash) return;
 
 			this.currentHeadings = cached.headings;
 			this.lastHeadingsHash = headingsHash;
@@ -192,8 +179,7 @@ export class FloatingHeadingsStateManager {
 	private shouldUseCustomRegex(): boolean {
 		return (
 			this.settings.useCustomRegex &&
-			this.settings.customRegexPatterns &&
-			this.settings.customRegexPatterns.length > 0 &&
+			this.settings.customRegexPatterns?.length > 0 &&
 			this.settings.customRegexPatterns.some(
 				(pattern) => pattern.trim() !== ""
 			)
@@ -249,9 +235,7 @@ export class FloatingHeadingsStateManager {
 		cacheKey: string
 	): void {
 		const headingsHash = this.hashHeadings(headings);
-		if (headingsHash === this.lastHeadingsHash) {
-			return;
-		}
+		if (headingsHash === this.lastHeadingsHash) return;
 
 		this.currentHeadings = headings;
 		this.lastHeadingsHash = headingsHash;
@@ -284,48 +268,31 @@ export class FloatingHeadingsStateManager {
 	private findTargetContainer(): HTMLElement | null {
 		if (!this.activeMarkdownView) return null;
 
-		const isReadingMode = this.isReadingMode();
-		let targetContainer: HTMLElement | null = null;
+		const selectors = this.isReadingMode()
+			? [".markdown-reading-view", ".view-content"]
+			: [".cm-editor", ".view-content"];
 
-		if (isReadingMode) {
-			targetContainer = this.activeMarkdownView.containerEl.querySelector(
-				".markdown-reading-view"
-			);
-		} else {
-			targetContainer =
-				this.activeMarkdownView.containerEl.querySelector(".cm-editor");
+		for (const selector of selectors) {
+			const element =
+				this.activeMarkdownView.containerEl.querySelector(selector);
+			if (element) return element as HTMLElement;
 		}
 
-		if (!targetContainer) {
-			targetContainer =
-				this.activeMarkdownView.containerEl.querySelector(
-					".view-content"
-				);
-		}
-		if (!targetContainer) {
-			targetContainer = this.activeMarkdownView.containerEl;
-		}
-
-		return targetContainer;
+		return this.activeMarkdownView.containerEl;
 	}
 
 	private ensureRelativePositioning(element: HTMLElement): void {
-		const computedStyle = window.getComputedStyle(element);
-		if (computedStyle.position === "static") {
+		if (window.getComputedStyle(element).position === "static") {
 			element.classList.add("relative-position");
 		}
 	}
 
 	private refreshUI(): void {
-		if (this.ui) {
-			this.ui.refresh();
-		}
+		this.ui?.refresh();
 	}
 
 	private cleanupUI(): void {
-		if (this.ui) {
-			this.ui.cleanup();
-		}
+		this.ui?.cleanup();
 	}
 
 	getCurrentHeadings(): HeadingInfo[] {
@@ -353,8 +320,6 @@ export class FloatingHeadingsStateManager {
 	cleanup(): void {
 		this.timeoutManager.clearAll();
 		this.cleanupUI();
-		this.headingsCache.clear();
-		this.lastContentHash = "";
-		this.lastHeadingsHash = "";
+		this.clearCache();
 	}
 }
