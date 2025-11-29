@@ -77,16 +77,11 @@ export class NavigationHelper {
 		const file = markdownView.file;
 		if (!file) return;
 
-		await markdownView.leaf.openFile(file, {
-			eState: { line: heading.line },
-		});
+		const currentMode = markdownView.currentMode;
 
-		setTimeout(() => {
-			const currentMode = markdownView.currentMode;
-			if (currentMode && typeof currentMode.applyScroll === "function") {
-				currentMode.applyScroll(heading.line);
-			}
-		}, 0);
+		if (currentMode && typeof currentMode.applyScroll === "function") {
+			currentMode.applyScroll(heading.line);
+		}
 	}
 }
 
