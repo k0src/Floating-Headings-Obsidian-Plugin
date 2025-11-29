@@ -35,7 +35,7 @@ export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
 	panelWidth: 240,
 	panelMaxHeight: 400,
 	collapsedWidth: 16,
-	lineThickness: 3,
+	lineThickness: 2,
 	panelScrollPosition: "previous",
 	parseHtmlElements: false,
 	useCustomRegex: false,

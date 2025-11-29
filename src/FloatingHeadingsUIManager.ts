@@ -26,8 +26,9 @@ export class FloatingHeadingsUIManager {
 
 	private lastRenderedCollapsedHeadings: HeadingInfo[] = [];
 	private lastRenderedExpandedHeadings: HeadingInfo[] = [];
-	private lastCollapsedHeight: string = "";
+	private lastCollapsedHeight: number = 0;
 	private currentSettingsClasses: string[] = [];
+	private currentHeightClass: string = "";
 
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
@@ -89,15 +90,6 @@ export class FloatingHeadingsUIManager {
 		});
 
 		this.currentSettingsClasses = newClasses;
-	}
-
-	private setCollapsedHeight(height: string): void {
-		if (!this.containerElement) return;
-
-		this.containerElement.style.setProperty(
-			"--floating-headings-collapsed-height",
-			height
-		);
 	}
 
 	private createContainer(): HTMLElement {
@@ -258,21 +250,30 @@ export class FloatingHeadingsUIManager {
 		const maxHeight = this.plugin.settings.panelMaxHeight;
 		const maxLines = Math.floor((maxHeight - 8) / 9);
 		const fittingHeadings = headings.slice(0, maxLines);
-		const panelHeight = Math.min(
+		const calculatedHeight = Math.min(
 			headings.length * this.expandedItemHeight + this.expandedPadding,
 			maxHeight
 		);
-		const newHeight = `${panelHeight}px`;
+
+		const roundedHeight = Math.max(
+			20,
+			Math.min(800, Math.round(calculatedHeight / 20) * 20)
+		);
 
 		if (
-			newHeight !== this.lastCollapsedHeight ||
+			roundedHeight !== this.lastCollapsedHeight ||
 			!this.areHeadingsEqual(
 				this.lastRenderedCollapsedHeadings,
 				fittingHeadings
 			)
 		) {
-			this.setCollapsedHeight(newHeight);
-			this.lastCollapsedHeight = newHeight;
+			if (this.currentHeightClass) {
+				this.containerElement.classList.remove(this.currentHeightClass);
+			}
+
+			this.currentHeightClass = `fh-height-${roundedHeight}`;
+			this.containerElement.classList.add(this.currentHeightClass);
+			this.lastCollapsedHeight = roundedHeight;
 
 			this.collapsedSidebar.empty();
 			fittingHeadings.forEach((heading, index) => {
@@ -712,7 +713,8 @@ export class FloatingHeadingsUIManager {
 		this.collapsedHeadings.clear();
 		this.lastRenderedCollapsedHeadings = [];
 		this.lastRenderedExpandedHeadings = [];
-		this.lastCollapsedHeight = "";
+		this.lastCollapsedHeight = 0;
+		this.currentHeightClass = "";
 	}
 	refresh() {
 		this.applySettingsClasses();

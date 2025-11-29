@@ -729,6 +729,128 @@
 	--floating-headings-animation-duration: 500ms;
 }
 
+/* Collapsed height */
+.fh-height-20 {
+	--floating-headings-collapsed-height: 20px;
+}
+.fh-height-40 {
+	--floating-headings-collapsed-height: 40px;
+}
+.fh-height-60 {
+	--floating-headings-collapsed-height: 60px;
+}
+.fh-height-80 {
+	--floating-headings-collapsed-height: 80px;
+}
+.fh-height-100 {
+	--floating-headings-collapsed-height: 100px;
+}
+.fh-height-120 {
+	--floating-headings-collapsed-height: 120px;
+}
+.fh-height-140 {
+	--floating-headings-collapsed-height: 140px;
+}
+.fh-height-160 {
+	--floating-headings-collapsed-height: 160px;
+}
+.fh-height-180 {
+	--floating-headings-collapsed-height: 180px;
+}
+.fh-height-200 {
+	--floating-headings-collapsed-height: 200px;
+}
+.fh-height-220 {
+	--floating-headings-collapsed-height: 220px;
+}
+.fh-height-240 {
+	--floating-headings-collapsed-height: 240px;
+}
+.fh-height-260 {
+	--floating-headings-collapsed-height: 260px;
+}
+.fh-height-280 {
+	--floating-headings-collapsed-height: 280px;
+}
+.fh-height-300 {
+	--floating-headings-collapsed-height: 300px;
+}
+.fh-height-320 {
+	--floating-headings-collapsed-height: 320px;
+}
+.fh-height-340 {
+	--floating-headings-collapsed-height: 340px;
+}
+.fh-height-360 {
+	--floating-headings-collapsed-height: 360px;
+}
+.fh-height-380 {
+	--floating-headings-collapsed-height: 380px;
+}
+.fh-height-400 {
+	--floating-headings-collapsed-height: 400px;
+}
+.fh-height-420 {
+	--floating-headings-collapsed-height: 420px;
+}
+.fh-height-440 {
+	--floating-headings-collapsed-height: 440px;
+}
+.fh-height-460 {
+	--floating-headings-collapsed-height: 460px;
+}
+.fh-height-480 {
+	--floating-headings-collapsed-height: 480px;
+}
+.fh-height-500 {
+	--floating-headings-collapsed-height: 500px;
+}
+.fh-height-520 {
+	--floating-headings-collapsed-height: 520px;
+}
+.fh-height-540 {
+	--floating-headings-collapsed-height: 540px;
+}
+.fh-height-560 {
+	--floating-headings-collapsed-height: 560px;
+}
+.fh-height-580 {
+	--floating-headings-collapsed-height: 580px;
+}
+.fh-height-600 {
+	--floating-headings-collapsed-height: 600px;
+}
+.fh-height-620 {
+	--floating-headings-collapsed-height: 620px;
+}
+.fh-height-640 {
+	--floating-headings-collapsed-height: 640px;
+}
+.fh-height-660 {
+	--floating-headings-collapsed-height: 660px;
+}
+.fh-height-680 {
+	--floating-headings-collapsed-height: 680px;
+}
+.fh-height-700 {
+	--floating-headings-collapsed-height: 700px;
+}
+.fh-height-720 {
+	--floating-headings-collapsed-height: 720px;
+}
+.fh-height-740 {
+	--floating-headings-collapsed-height: 740px;
+}
+.fh-height-760 {
+	--floating-headings-collapsed-height: 760px;
+}
+.fh-height-780 {
+	--floating-headings-collapsed-height: 780px;
+}
+.fh-height-800 {
+	--floating-headings-collapsed-height: 800px;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.floating-headings-container *,
 	.floating-headings-container *::before,
