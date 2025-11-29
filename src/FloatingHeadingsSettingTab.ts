@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting, MarkdownView } from "obsidian";
+import { App, PluginSettingTab, Setting } from "obsidian";
 import type FloatingHeadingsPlugin from "../main";
 import { HeadingParser } from "./HeadingParser";
 import { DEFAULT_SETTINGS } from "./types";
@@ -302,7 +302,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Use custom regex")
 			.setDesc(
-				"Enable custom regular expression for parsing headings instead of standard markdown format."
+				"Enable custom regular expression for parsing headings instead of standard Markdown format."
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -357,9 +357,9 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					btn
 						.setIcon("plus")
 						.setTooltip("Add new pattern")
-						.onClick(() => {
+						.onClick(async () => {
 							this.plugin.settings.customRegexPatterns.push("");
-							this.plugin.saveSettings();
+							await this.plugin.saveSettings();
 							this.display();
 						})
 				);
@@ -368,7 +368,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 
 	private renderRegexPatterns(container: HTMLElement): void {
 		this.plugin.settings.customRegexPatterns.forEach((pattern, index) => {
-			const setting = new Setting(container)
+			new Setting(container)
 				.setName(`Pattern ${index + 1}`)
 				.addText((text) => {
 					const updatePattern = async (value: string) => {
@@ -380,9 +380,9 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 							value.trim() === "" ||
 							HeadingParser.isValidRegex(value)
 						) {
-							text.inputEl.removeClass("invalid-regex");
+							text.inputEl.classList.remove("invalid-regex");
 						} else {
-							text.inputEl.addClass("invalid-regex");
+							text.inputEl.classList.add("invalid-regex");
 						}
 					};
 
@@ -392,7 +392,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						pattern.trim() !== "" &&
 						!HeadingParser.isValidRegex(pattern)
 					) {
-						text.inputEl.addClass("invalid-regex");
+						text.inputEl.classList.add("invalid-regex");
 					}
 
 					return text;

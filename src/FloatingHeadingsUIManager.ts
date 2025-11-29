@@ -12,8 +12,6 @@ export class FloatingHeadingsUIManager {
 	private isExpanded: boolean = false;
 	private hoverTimeout: number | null = null;
 	private isLocked: boolean = false;
-	private dynamicStyles: HTMLStyleElement | null = null;
-	private dynamicStyleId: string;
 
 	private expandedItemHeight: number = 0;
 	private expandedPadding: number = 0;
@@ -31,14 +29,10 @@ export class FloatingHeadingsUIManager {
 	private lastCollapsedHeight: string = "";
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
-		this.dynamicStyleId = `floating-headings-dynamic-${Math.random()
-			.toString(36)
-			.slice(2, 9)}`;
 	}
 
 	mount(parentElement: HTMLElement) {
 		this.cleanup();
-		this.createDynamicStyles();
 
 		this.containerElement = this.createContainer();
 		this.collapsedSidebar = this.createCollapsedSidebar();
@@ -69,58 +63,49 @@ export class FloatingHeadingsUIManager {
 		this.expandedPadding = size42 * 2;
 	}
 
-	private createDynamicStyles(): void {
-		this.removeDynamicStyles();
-
-		this.dynamicStyles = document.createElement("style");
-		this.dynamicStyles.id = this.dynamicStyleId;
-
-		document.head.appendChild(this.dynamicStyles);
-	}
-
-	private removeDynamicStyles(): void {
-		if (this.dynamicStyles) {
-			this.dynamicStyles.remove();
-			this.dynamicStyles = null;
-		}
-		const existing = document.getElementById(this.dynamicStyleId);
-		existing?.remove();
-	}
-
 	private updateDynamicCSS(collapsedHeight?: string): void {
 		if (!this.containerElement) return;
 
 		const settings = this.plugin.settings;
 		const heightProperty = collapsedHeight || this.lastCollapsedHeight;
 
-		const dynamicCSS = `
-			#${this.containerElement.id} {
-				--floating-headings-collapsed-width: ${settings.collapsedWidth}px;
-				--floating-headings-panel-width: ${settings.panelWidth}px;
-				--floating-headings-panel-max-height: ${settings.panelMaxHeight}px;
-				--floating-headings-animation-duration: ${settings.animationDuration}ms;
-				--floating-headings-vertical-position: ${100 - settings.verticalPosition}%;
-				--floating-headings-line-thickness: ${settings.lineThickness}px;
-				${
-					heightProperty
-						? `--floating-headings-collapsed-height: ${heightProperty};`
-						: ""
-				}
-			}
-		`;
-
-		if (this.dynamicStyles) {
-			this.dynamicStyles.textContent = dynamicCSS;
+		this.containerElement.style.setProperty(
+			"--floating-headings-collapsed-width",
+			`${settings.collapsedWidth}px`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-panel-width",
+			`${settings.panelWidth}px`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-panel-max-height",
+			`${settings.panelMaxHeight}px`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-animation-duration",
+			`${settings.animationDuration}ms`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-vertical-position",
+			`${100 - settings.verticalPosition}%`
+		);
+		this.containerElement.style.setProperty(
+			"--floating-headings-line-thickness",
+			`${settings.lineThickness}px`
+		);
+		if (heightProperty) {
+			this.containerElement.style.setProperty(
+				"--floating-headings-collapsed-height",
+				heightProperty
+			);
 		}
 	}
 
 	private createContainer(): HTMLElement {
 		const container = DOMHelper.createDiv("floating-headings-container");
 
-		container.id = `floating-headings-${this.dynamicStyleId}`;
-
 		if (this.plugin.settings.sidebarPosition === "left") {
-			container.addClass("position-left");
+			container.classList.add("position-left");
 		}
 
 		return container;
@@ -199,7 +184,7 @@ export class FloatingHeadingsUIManager {
 			this.containerElement &&
 			this.containerElement.hasClass("no-transition")
 		) {
-			this.containerElement.removeClass("no-transition");
+			this.containerElement.classList.remove("no-transition");
 		}
 
 		this.collapsedSidebar.classList.remove("hovered");
@@ -565,7 +550,7 @@ export class FloatingHeadingsUIManager {
 
 		DOMHelper.addEventListeners(item, {
 			click: () => {
-				this.handleHeadingClick(heading, index);
+				void this.handleHeadingClick(heading, index);
 			},
 		});
 
@@ -682,7 +667,9 @@ export class FloatingHeadingsUIManager {
 	}
 
 	private loadCollapsedState(): void {
-		const saved = localStorage.getItem("floating-headings-collapsed-state");
+		const saved = this.plugin.app.loadLocalStorage(
+			"floating-headings-collapsed-state"
+		);
 		if (saved) {
 			try {
 				const collapsedArray = JSON.parse(saved);
@@ -697,7 +684,7 @@ export class FloatingHeadingsUIManager {
 	private saveCollapsedState(): void {
 		try {
 			const collapsedArray = Array.from(this.collapsedHeadings);
-			localStorage.setItem(
+			this.plugin.app.saveLocalStorage(
 				"floating-headings-collapsed-state",
 				JSON.stringify(collapsedArray)
 			);
@@ -711,8 +698,6 @@ export class FloatingHeadingsUIManager {
 			clearTimeout(this.hoverTimeout);
 			this.hoverTimeout = null;
 		}
-
-		this.removeDynamicStyles();
 
 		if (this.containerElement) {
 			this.containerElement.remove();
@@ -810,16 +795,14 @@ export class FloatingHeadingsUIManager {
 
 	private onFilterInput(value: string) {
 		this.filterQuery = value.trim().toLowerCase();
-		const clearIcon = this.filterContainer?.querySelector(
-			".clear-icon"
-		) as HTMLElement;
+		const clearIcon = this.filterContainer?.querySelector(".clear-icon");
 
 		this.isFiltering = Boolean(this.filterQuery);
 
 		if (this.filterQuery) {
-			clearIcon?.removeClass("hidden");
+			clearIcon?.classList.remove("hidden");
 		} else {
-			clearIcon?.addClass("hidden");
+			clearIcon?.classList.add("hidden");
 		}
 
 		this.applyFilter();
@@ -854,10 +837,9 @@ export class FloatingHeadingsUIManager {
 			this.filteredHeadings = [];
 			this.isFiltering = false;
 
-			const clearIcon = this.filterContainer?.querySelector(
-				".clear-icon"
-			) as HTMLElement;
-			clearIcon?.addClass("hidden");
+			const clearIcon =
+				this.filterContainer?.querySelector(".clear-icon");
+			clearIcon?.classList.add("hidden");
 
 			if (this.isExpanded) {
 				this.applyFilter();

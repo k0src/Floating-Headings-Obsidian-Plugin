@@ -136,7 +136,7 @@ export class FloatingHeadingsStateManager {
 		}
 
 		if (this.shouldUseCustomRegex()) {
-			this.processCustomRegexHeadings(file, cacheKey);
+			void this.processCustomRegexHeadings(file, cacheKey);
 		} else {
 			this.processStandardHeadings(file, cacheKey);
 		}
@@ -257,11 +257,16 @@ export class FloatingHeadingsStateManager {
 			this.currentHeadings = headings;
 			this.refreshUI();
 		} else if (file) {
-			this.app.vault.cachedRead(file).then((content) => {
-				const headings = this.parseHeadingsFromContent(content);
-				this.currentHeadings = headings;
-				this.refreshUI();
-			});
+			this.app.vault
+				.cachedRead(file)
+				.then((content) => {
+					const headings = this.parseHeadingsFromContent(content);
+					this.currentHeadings = headings;
+					this.refreshUI();
+				})
+				.catch((error) => {
+					console.error("Error reading file in fallback:", error);
+				});
 		}
 	}
 
