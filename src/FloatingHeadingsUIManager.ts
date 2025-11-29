@@ -27,6 +27,8 @@ export class FloatingHeadingsUIManager {
 	private lastRenderedCollapsedHeadings: HeadingInfo[] = [];
 	private lastRenderedExpandedHeadings: HeadingInfo[] = [];
 	private lastCollapsedHeight: string = "";
+	private currentSettingsClasses: string[] = [];
+
 	constructor(plugin: FloatingHeadingsPlugin) {
 		this.plugin = plugin;
 	}
@@ -43,7 +45,7 @@ export class FloatingHeadingsUIManager {
 		parentElement.appendChild(this.containerElement);
 
 		this.loadCollapsedState();
-		this.updateCSSProperties();
+		this.applySettingsClasses();
 		this.calculateDimensionsFromStyles();
 		this.updateCollapsedView();
 	}
@@ -63,42 +65,39 @@ export class FloatingHeadingsUIManager {
 		this.expandedPadding = size42 * 2;
 	}
 
-	private updateDynamicCSS(collapsedHeight?: string): void {
+	private applySettingsClasses(): void {
 		if (!this.containerElement) return;
 
 		const settings = this.plugin.settings;
-		const heightProperty = collapsedHeight || this.lastCollapsedHeight;
+
+		this.currentSettingsClasses.forEach((className) => {
+			this.containerElement?.removeClass(className);
+		});
+		this.currentSettingsClasses = [];
+
+		const newClasses: string[] = [
+			`fh-vpos-${settings.verticalPosition}`,
+			`fh-max-height-${settings.panelMaxHeight}`,
+			`fh-panel-width-${settings.panelWidth}`,
+			`fh-collapsed-width-${settings.collapsedWidth}`,
+			`fh-line-thickness-${settings.lineThickness}`,
+			`fh-anim-${settings.animationDuration}`,
+		];
+
+		newClasses.forEach((className) => {
+			this.containerElement?.addClass(className);
+		});
+
+		this.currentSettingsClasses = newClasses;
+	}
+
+	private setCollapsedHeight(height: string): void {
+		if (!this.containerElement) return;
 
 		this.containerElement.style.setProperty(
-			"--floating-headings-collapsed-width",
-			`${settings.collapsedWidth}px`
+			"--floating-headings-collapsed-height",
+			height
 		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-panel-width",
-			`${settings.panelWidth}px`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-panel-max-height",
-			`${settings.panelMaxHeight}px`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-animation-duration",
-			`${settings.animationDuration}ms`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-vertical-position",
-			`${100 - settings.verticalPosition}%`
-		);
-		this.containerElement.style.setProperty(
-			"--floating-headings-line-thickness",
-			`${settings.lineThickness}px`
-		);
-		if (heightProperty) {
-			this.containerElement.style.setProperty(
-				"--floating-headings-collapsed-height",
-				heightProperty
-			);
-		}
 	}
 
 	private createContainer(): HTMLElement {
@@ -272,7 +271,7 @@ export class FloatingHeadingsUIManager {
 				fittingHeadings
 			)
 		) {
-			this.updateDynamicCSS(newHeight);
+			this.setCollapsedHeight(newHeight);
 			this.lastCollapsedHeight = newHeight;
 
 			this.collapsedSidebar.empty();
@@ -716,7 +715,8 @@ export class FloatingHeadingsUIManager {
 		this.lastCollapsedHeight = "";
 	}
 	refresh() {
-		this.updateCSSProperties();
+		this.applySettingsClasses();
+		this.updateContainerPosition();
 		if (!this.containerElement?.parentElement) return;
 
 		this.calculateDimensionsFromStyles();
@@ -847,7 +847,7 @@ export class FloatingHeadingsUIManager {
 		}
 	}
 
-	private updateCSSProperties() {
+	private updateContainerPosition() {
 		if (!this.containerElement) return;
 
 		const settings = this.plugin.settings;
@@ -856,7 +856,5 @@ export class FloatingHeadingsUIManager {
 			"position-left",
 			settings.sidebarPosition === "left"
 		);
-
-		this.updateDynamicCSS();
 	}
 }

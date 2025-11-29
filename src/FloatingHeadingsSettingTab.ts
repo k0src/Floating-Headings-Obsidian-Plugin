@@ -116,6 +116,21 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 		new Setting(containerEl).setName("Appearance").setHeading();
 
 		new Setting(containerEl)
+			.setName("Panel position")
+			.setDesc("Change which side of the screen the sidebar appears on.")
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("left", "Left")
+					.addOption("right", "Right")
+					.setValue(this.plugin.settings.sidebarPosition)
+					.onChange(async (value: "left" | "right") => {
+						this.plugin.settings.sidebarPosition = value;
+						await this.plugin.saveSettings();
+						this.plugin.ui?.refresh();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Panel max height")
 			.setDesc("Maximum height of the panel in pixels.")
 			.addSlider((slider) =>
@@ -243,7 +258,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 			.setDesc("Duration of animations in milliseconds.")
 			.addSlider((slider) =>
 				slider
-					.setLimits(50, 500, 25)
+					.setLimits(0, 500, 25)
 					.setValue(this.plugin.settings.animationDuration)
 					.setDynamicTooltip()
 					.onChange(async (value) => {

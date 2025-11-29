@@ -359,6 +359,376 @@
 	display: none;
 }
 
+/* ============================= Setting classes ============================ */
+/* Vertical position */
+.fh-vpos-0 {
+	--floating-headings-vertical-position: 100%;
+}
+.fh-vpos-5 {
+	--floating-headings-vertical-position: 95%;
+}
+.fh-vpos-10 {
+	--floating-headings-vertical-position: 90%;
+}
+.fh-vpos-15 {
+	--floating-headings-vertical-position: 85%;
+}
+.fh-vpos-20 {
+	--floating-headings-vertical-position: 80%;
+}
+.fh-vpos-25 {
+	--floating-headings-vertical-position: 75%;
+}
+.fh-vpos-30 {
+	--floating-headings-vertical-position: 70%;
+}
+.fh-vpos-35 {
+	--floating-headings-vertical-position: 65%;
+}
+.fh-vpos-40 {
+	--floating-headings-vertical-position: 60%;
+}
+.fh-vpos-45 {
+	--floating-headings-vertical-position: 55%;
+}
+.fh-vpos-50 {
+	--floating-headings-vertical-position: 50%;
+}
+.fh-vpos-55 {
+	--floating-headings-vertical-position: 45%;
+}
+.fh-vpos-60 {
+	--floating-headings-vertical-position: 40%;
+}
+.fh-vpos-65 {
+	--floating-headings-vertical-position: 35%;
+}
+.fh-vpos-70 {
+	--floating-headings-vertical-position: 30%;
+}
+.fh-vpos-75 {
+	--floating-headings-vertical-position: 25%;
+}
+.fh-vpos-80 {
+	--floating-headings-vertical-position: 20%;
+}
+.fh-vpos-85 {
+	--floating-headings-vertical-position: 15%;
+}
+.fh-vpos-90 {
+	--floating-headings-vertical-position: 10%;
+}
+.fh-vpos-95 {
+	--floating-headings-vertical-position: 5%;
+}
+.fh-vpos-100 {
+	--floating-headings-vertical-position: 0%;
+}
+
+/* Panel max height */
+.fh-max-height-100 {
+	--floating-headings-panel-max-height: 100px;
+}
+.fh-max-height-120 {
+	--floating-headings-panel-max-height: 120px;
+}
+.fh-max-height-140 {
+	--floating-headings-panel-max-height: 140px;
+}
+.fh-max-height-160 {
+	--floating-headings-panel-max-height: 160px;
+}
+.fh-max-height-180 {
+	--floating-headings-panel-max-height: 180px;
+}
+.fh-max-height-200 {
+	--floating-headings-panel-max-height: 200px;
+}
+.fh-max-height-220 {
+	--floating-headings-panel-max-height: 220px;
+}
+.fh-max-height-240 {
+	--floating-headings-panel-max-height: 240px;
+}
+.fh-max-height-260 {
+	--floating-headings-panel-max-height: 260px;
+}
+.fh-max-height-280 {
+	--floating-headings-panel-max-height: 280px;
+}
+.fh-max-height-300 {
+	--floating-headings-panel-max-height: 300px;
+}
+.fh-max-height-320 {
+	--floating-headings-panel-max-height: 320px;
+}
+.fh-max-height-340 {
+	--floating-headings-panel-max-height: 340px;
+}
+.fh-max-height-360 {
+	--floating-headings-panel-max-height: 360px;
+}
+.fh-max-height-380 {
+	--floating-headings-panel-max-height: 380px;
+}
+.fh-max-height-400 {
+	--floating-headings-panel-max-height: 400px;
+}
+.fh-max-height-420 {
+	--floating-headings-panel-max-height: 420px;
+}
+.fh-max-height-440 {
+	--floating-headings-panel-max-height: 440px;
+}
+.fh-max-height-460 {
+	--floating-headings-panel-max-height: 460px;
+}
+.fh-max-height-480 {
+	--floating-headings-panel-max-height: 480px;
+}
+.fh-max-height-500 {
+	--floating-headings-panel-max-height: 500px;
+}
+.fh-max-height-520 {
+	--floating-headings-panel-max-height: 520px;
+}
+.fh-max-height-540 {
+	--floating-headings-panel-max-height: 540px;
+}
+.fh-max-height-560 {
+	--floating-headings-panel-max-height: 560px;
+}
+.fh-max-height-580 {
+	--floating-headings-panel-max-height: 580px;
+}
+.fh-max-height-600 {
+	--floating-headings-panel-max-height: 600px;
+}
+.fh-max-height-620 {
+	--floating-headings-panel-max-height: 620px;
+}
+.fh-max-height-640 {
+	--floating-headings-panel-max-height: 640px;
+}
+.fh-max-height-660 {
+	--floating-headings-panel-max-height: 660px;
+}
+.fh-max-height-680 {
+	--floating-headings-panel-max-height: 680px;
+}
+.fh-max-height-700 {
+	--floating-headings-panel-max-height: 700px;
+}
+.fh-max-height-720 {
+	--floating-headings-panel-max-height: 720px;
+}
+.fh-max-height-740 {
+	--floating-headings-panel-max-height: 740px;
+}
+.fh-max-height-760 {
+	--floating-headings-panel-max-height: 760px;
+}
+.fh-max-height-780 {
+	--floating-headings-panel-max-height: 780px;
+}
+.fh-max-height-800 {
+	--floating-headings-panel-max-height: 800px;
+}
+
+/* Panel width */
+.fh-panel-width-180 {
+	--floating-headings-panel-width: 180px;
+}
+.fh-panel-width-200 {
+	--floating-headings-panel-width: 200px;
+}
+.fh-panel-width-220 {
+	--floating-headings-panel-width: 220px;
+}
+.fh-panel-width-240 {
+	--floating-headings-panel-width: 240px;
+}
+.fh-panel-width-260 {
+	--floating-headings-panel-width: 260px;
+}
+.fh-panel-width-280 {
+	--floating-headings-panel-width: 280px;
+}
+.fh-panel-width-300 {
+	--floating-headings-panel-width: 300px;
+}
+.fh-panel-width-320 {
+	--floating-headings-panel-width: 320px;
+}
+.fh-panel-width-340 {
+	--floating-headings-panel-width: 340px;
+}
+.fh-panel-width-360 {
+	--floating-headings-panel-width: 360px;
+}
+.fh-panel-width-380 {
+	--floating-headings-panel-width: 380px;
+}
+.fh-panel-width-400 {
+	--floating-headings-panel-width: 400px;
+}
+
+/* Collapsed width */
+.fh-collapsed-width-8 {
+	--floating-headings-collapsed-width: 8px;
+}
+.fh-collapsed-width-10 {
+	--floating-headings-collapsed-width: 10px;
+}
+.fh-collapsed-width-12 {
+	--floating-headings-collapsed-width: 12px;
+}
+.fh-collapsed-width-14 {
+	--floating-headings-collapsed-width: 14px;
+}
+.fh-collapsed-width-16 {
+	--floating-headings-collapsed-width: 16px;
+}
+.fh-collapsed-width-18 {
+	--floating-headings-collapsed-width: 18px;
+}
+.fh-collapsed-width-20 {
+	--floating-headings-collapsed-width: 20px;
+}
+.fh-collapsed-width-22 {
+	--floating-headings-collapsed-width: 22px;
+}
+.fh-collapsed-width-24 {
+	--floating-headings-collapsed-width: 24px;
+}
+.fh-collapsed-width-26 {
+	--floating-headings-collapsed-width: 26px;
+}
+.fh-collapsed-width-28 {
+	--floating-headings-collapsed-width: 28px;
+}
+.fh-collapsed-width-30 {
+	--floating-headings-collapsed-width: 30px;
+}
+.fh-collapsed-width-32 {
+	--floating-headings-collapsed-width: 32px;
+}
+.fh-collapsed-width-34 {
+	--floating-headings-collapsed-width: 34px;
+}
+.fh-collapsed-width-36 {
+	--floating-headings-collapsed-width: 36px;
+}
+.fh-collapsed-width-38 {
+	--floating-headings-collapsed-width: 38px;
+}
+.fh-collapsed-width-40 {
+	--floating-headings-collapsed-width: 40px;
+}
+.fh-collapsed-width-42 {
+	--floating-headings-collapsed-width: 42px;
+}
+.fh-collapsed-width-44 {
+	--floating-headings-collapsed-width: 44px;
+}
+.fh-collapsed-width-46 {
+	--floating-headings-collapsed-width: 46px;
+}
+.fh-collapsed-width-48 {
+	--floating-headings-collapsed-width: 48px;
+}
+
+/* Line thickness */
+.fh-line-thickness-1 {
+	--floating-headings-line-thickness: 1px;
+}
+.fh-line-thickness-2 {
+	--floating-headings-line-thickness: 2px;
+}
+.fh-line-thickness-3 {
+	--floating-headings-line-thickness: 3px;
+}
+.fh-line-thickness-4 {
+	--floating-headings-line-thickness: 4px;
+}
+.fh-line-thickness-5 {
+	--floating-headings-line-thickness: 5px;
+}
+.fh-line-thickness-6 {
+	--floating-headings-line-thickness: 6px;
+}
+.fh-line-thickness-7 {
+	--floating-headings-line-thickness: 7px;
+}
+.fh-line-thickness-8 {
+	--floating-headings-line-thickness: 8px;
+}
+
+/* Animation duration */
+.fh-anim-0 {
+	--floating-headings-animation-duration: 0ms;
+}
+.fh-anim-25 {
+	--floating-headings-animation-duration: 25ms;
+}
+.fh-anim-50 {
+	--floating-headings-animation-duration: 50ms;
+}
+.fh-anim-75 {
+	--floating-headings-animation-duration: 75ms;
+}
+.fh-anim-100 {
+	--floating-headings-animation-duration: 100ms;
+}
+.fh-anim-125 {
+	--floating-headings-animation-duration: 125ms;
+}
+.fh-anim-150 {
+	--floating-headings-animation-duration: 150ms;
+}
+.fh-anim-175 {
+	--floating-headings-animation-duration: 175ms;
+}
+.fh-anim-200 {
+	--floating-headings-animation-duration: 200ms;
+}
+.fh-anim-225 {
+	--floating-headings-animation-duration: 225ms;
+}
+.fh-anim-250 {
+	--floating-headings-animation-duration: 250ms;
+}
+.fh-anim-275 {
+	--floating-headings-animation-duration: 275ms;
+}
+.fh-anim-300 {
+	--floating-headings-animation-duration: 300ms;
+}
+.fh-anim-325 {
+	--floating-headings-animation-duration: 325ms;
+}
+.fh-anim-350 {
+	--floating-headings-animation-duration: 350ms;
+}
+.fh-anim-375 {
+	--floating-headings-animation-duration: 375ms;
+}
+.fh-anim-400 {
+	--floating-headings-animation-duration: 400ms;
+}
+.fh-anim-425 {
+	--floating-headings-animation-duration: 425ms;
+}
+.fh-anim-450 {
+	--floating-headings-animation-duration: 450ms;
+}
+.fh-anim-475 {
+	--floating-headings-animation-duration: 475ms;
+}
+.fh-anim-500 {
+	--floating-headings-animation-duration: 500ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.floating-headings-container *,
 	.floating-headings-container *::before,
