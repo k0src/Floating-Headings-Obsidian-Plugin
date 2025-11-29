@@ -104,8 +104,4 @@ export default class FloatingHeadingsPlugin extends Plugin {
 	isReadingMode(): boolean {
 		return this.stateManager?.isReadingMode() || false;
 	}
-
-	cleanupUI() {
-		this.stateManager?.cleanup();
-	}
 }

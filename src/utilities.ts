@@ -36,10 +36,17 @@ export class CacheManager<T> {
 	private cleanOldEntries(): void {
 		if (this.cache.size <= this.maxSize) return;
 
-		const oldestKey = this.cache.keys().next().value;
-		if (oldestKey) {
-			this.cache.delete(oldestKey);
+		const entriesToRemove = this.cache.size - this.maxSize;
+		const keysToRemove: string[] = [];
+
+		let count = 0;
+		for (const key of this.cache.keys()) {
+			if (count >= entriesToRemove) break;
+			keysToRemove.push(key);
+			count++;
 		}
+
+		keysToRemove.forEach((key) => this.cache.delete(key));
 	}
 
 	get size(): number {

@@ -24,8 +24,6 @@ export class HeadingParser {
 		const fileHeadings: HeadingCache[] = fileMetadata.headings;
 		if (fileHeadings.length === 0) return [];
 
-		const cacheKey = `${file.path}_${file.stat.mtime}_${plugin.settings.parseHtmlElements}_${plugin.settings.useCustomRegex}`;
-
 		return fileHeadings.map((heading) => {
 			let displayText = heading.heading;
 

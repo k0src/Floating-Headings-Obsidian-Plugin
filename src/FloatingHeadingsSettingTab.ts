@@ -395,9 +395,9 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 							value.trim() === "" ||
 							HeadingParser.isValidRegex(value)
 						) {
-							text.inputEl.classList.remove("invalid-regex");
+							text.inputEl.removeClass("invalid-regex");
 						} else {
-							text.inputEl.classList.add("invalid-regex");
+							text.inputEl.addClass("invalid-regex");
 						}
 					};
 
@@ -407,7 +407,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						pattern.trim() !== "" &&
 						!HeadingParser.isValidRegex(pattern)
 					) {
-						text.inputEl.classList.add("invalid-regex");
+						text.inputEl.addClass("invalid-regex");
 					}
 
 					return text;

@@ -96,7 +96,7 @@ export class FloatingHeadingsUIManager {
 		const container = DOMHelper.createDiv("floating-headings-container");
 
 		if (this.plugin.settings.sidebarPosition === "left") {
-			container.classList.add("position-left");
+			container.addClass("position-left");
 		}
 
 		return container;
@@ -156,8 +156,8 @@ export class FloatingHeadingsUIManager {
 
 		const wasExpanded = this.isExpanded;
 
-		this.collapsedSidebar.classList.add("hovered");
-		this.expandedPanel.classList.add("visible");
+		this.collapsedSidebar.addClass("hovered");
+		this.expandedPanel.addClass("visible");
 		this.isExpanded = true;
 
 		if (!wasExpanded) {
@@ -175,11 +175,11 @@ export class FloatingHeadingsUIManager {
 			this.containerElement &&
 			this.containerElement.hasClass("no-transition")
 		) {
-			this.containerElement.classList.remove("no-transition");
+			this.containerElement.removeClass("no-transition");
 		}
 
-		this.collapsedSidebar.classList.remove("hovered");
-		this.expandedPanel.classList.remove("visible");
+		this.collapsedSidebar.removeClass("hovered");
+		this.expandedPanel.removeClass("visible");
 		this.isExpanded = false;
 
 		if (this.filterInput) {
@@ -241,11 +241,11 @@ export class FloatingHeadingsUIManager {
 
 		const headings = this.plugin.getCurrentHeadings();
 		if (headings.length === 0) {
-			this.collapsedSidebar.classList.add("hidden");
+			this.collapsedSidebar.addClass("hidden");
 			return;
 		}
 
-		this.collapsedSidebar.classList.remove("hidden");
+		this.collapsedSidebar.removeClass("hidden");
 
 		const maxHeight = this.plugin.settings.panelMaxHeight;
 		const maxLines = Math.floor((maxHeight - 8) / 9);
@@ -268,11 +268,11 @@ export class FloatingHeadingsUIManager {
 			)
 		) {
 			if (this.currentHeightClass) {
-				this.containerElement.classList.remove(this.currentHeightClass);
+				this.containerElement.removeClass(this.currentHeightClass);
 			}
 
 			this.currentHeightClass = `fh-height-${roundedHeight}`;
-			this.containerElement.classList.add(this.currentHeightClass);
+			this.containerElement.addClass(this.currentHeightClass);
 			this.lastCollapsedHeight = roundedHeight;
 
 			this.collapsedSidebar.empty();
@@ -418,7 +418,7 @@ export class FloatingHeadingsUIManager {
 					if (currentLevel <= parentLevel) {
 						break;
 					}
-					currentElement.classList.add("collapsed-hidden");
+					currentElement.addClass("collapsed-hidden");
 					currentElement =
 						currentElement.nextElementSibling as HTMLElement | null;
 				}
@@ -483,17 +483,17 @@ export class FloatingHeadingsUIManager {
 				const currentLevel = parseInt(el.dataset.level || "0");
 
 				if (isCollapsing) {
-					el.classList.add("collapsed-hidden");
+					el.addClass("collapsed-hidden");
 				} else {
 					if (currentLevel <= visibilityDepthLimit) {
-						el.classList.remove("collapsed-hidden");
+						el.removeClass("collapsed-hidden");
 						visibilityDepthLimit = el.classList.contains(
 							"collapsed"
 						)
 							? currentLevel
 							: currentLevel + 1;
 					} else {
-						el.classList.add("collapsed-hidden");
+						el.addClass("collapsed-hidden");
 					}
 				}
 			});
@@ -516,7 +516,7 @@ export class FloatingHeadingsUIManager {
 		const content = DOMHelper.createDiv("floating-heading-content");
 
 		if (hasChildren) {
-			item.classList.add("has-collapse-icon");
+			item.addClass("has-collapse-icon");
 
 			const collapseIcon = DOMHelper.createDiv(
 				"floating-heading-collapse-icon"
@@ -525,8 +525,8 @@ export class FloatingHeadingsUIManager {
 			const isCollapsed = this.collapsedHeadings.has(headingId);
 
 			if (isCollapsed) {
-				collapseIcon.classList.add("collapsed");
-				item.classList.add("collapsed");
+				collapseIcon.addClass("collapsed");
+				item.addClass("collapsed");
 			}
 
 			setIcon(collapseIcon, "chevron-down");
@@ -597,9 +597,7 @@ export class FloatingHeadingsUIManager {
 		const items = this.expandedPanel.querySelectorAll(
 			".floating-heading-item"
 		);
-		items.forEach((item) =>
-			(item as HTMLElement).classList.remove("active")
-		);
+		items.forEach((item) => (item as HTMLElement).removeClass("active"));
 
 		const closestHeading = this.findClosestHeading(markdownView, headings);
 		if (closestHeading !== null) {
@@ -607,7 +605,7 @@ export class FloatingHeadingsUIManager {
 				(item, index) => index === closestHeading
 			);
 			if (targetItem) {
-				(targetItem as HTMLElement).classList.add("active");
+				(targetItem as HTMLElement).addClass("active");
 			}
 		}
 	}
@@ -619,13 +617,11 @@ export class FloatingHeadingsUIManager {
 			".floating-heading-item"
 		);
 
-		items.forEach((item) =>
-			(item as HTMLElement).classList.remove("active")
-		);
+		items.forEach((item) => (item as HTMLElement).removeClass("active"));
 
 		const targetItem = items[headingIndex];
 		if (targetItem) {
-			(targetItem as HTMLElement).classList.add("active");
+			(targetItem as HTMLElement).addClass("active");
 		}
 	}
 
@@ -802,9 +798,9 @@ export class FloatingHeadingsUIManager {
 		this.isFiltering = Boolean(this.filterQuery);
 
 		if (this.filterQuery) {
-			clearIcon?.classList.remove("hidden");
+			clearIcon?.removeClass("hidden");
 		} else {
-			clearIcon?.classList.add("hidden");
+			clearIcon?.addClass("hidden");
 		}
 
 		this.applyFilter();
@@ -841,7 +837,7 @@ export class FloatingHeadingsUIManager {
 
 			const clearIcon =
 				this.filterContainer?.querySelector(".clear-icon");
-			clearIcon?.classList.add("hidden");
+			clearIcon?.addClass("hidden");
 
 			if (this.isExpanded) {
 				this.applyFilter();

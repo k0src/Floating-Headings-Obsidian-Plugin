@@ -288,7 +288,7 @@ export class FloatingHeadingsStateManager {
 
 	private ensureRelativePositioning(element: HTMLElement): void {
 		if (window.getComputedStyle(element).position === "static") {
-			element.classList.add("relative-position");
+			element.addClass("relative-position");
 		}
 	}
 
