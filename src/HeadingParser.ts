@@ -96,13 +96,31 @@ export class HeadingParser {
 	}
 
 	private static cleanMarkdownFormatting(text: string): string {
-		return text
-			.replace(/\*\*/g, "")
-			.replace(/\*/g, "")
-			.replace(/_/g, "")
-			.replace(/`/g, "")
-			.replace(/==/g, "")
-			.replace(/~~/g, "");
+		if (text.includes("`")) {
+			return text.replace(/`/g, "");
+		}
+
+		let result = text;
+
+		result = result.replace(/\*\*([^\s*][^*]*?[^\s*])\*\*/g, "$1");
+		result = result.replace(/\*\*([^\s*])\*\*/g, "$1");
+
+		result = result.replace(/\*([^\s*][^*]*?[^\s*])\*/g, "$1");
+		result = result.replace(/\*([^\s*])\*/g, "$1");
+
+		result = result.replace(/__([^\s_][^_]*?[^\s_])__/g, "$1");
+		result = result.replace(/__([^\s_])__/g, "$1");
+
+		result = result.replace(/_([^\s_][^_]*?[^\s_])_/g, "$1");
+		result = result.replace(/_([^\s_])_/g, "$1");
+
+		result = result.replace(/==([^\s=][^=]*?[^\s=])==/g, "$1");
+		result = result.replace(/==([^\s=])==/g, "$1");
+
+		result = result.replace(/~~([^\s~][^~]*?[^\s~])~~/g, "$1");
+		result = result.replace(/~~([^\s~])~~/g, "$1");
+
+		return result;
 	}
 
 	private static extractLinkText(text: string): string {
