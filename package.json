@@ -1,6 +1,6 @@
 {
 	"name": "floating-headings",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"description": "Displays a floating, collapsible outline of a note's headings on the right side of the editor. Expands on hover, click to navigate.",
 	"main": "main.js",
 	"scripts": {
