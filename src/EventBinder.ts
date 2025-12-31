@@ -1,4 +1,4 @@
-import { Plugin, MarkdownView, TFile, EventRef, WorkspaceLeaf } from "obsidian";
+import { Plugin, TFile, EventRef, WorkspaceLeaf } from "obsidian";
 
 interface StateManager {
 	handleActiveLeafChange(leaf: WorkspaceLeaf | null): void;

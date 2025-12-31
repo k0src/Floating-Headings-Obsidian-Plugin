@@ -70,10 +70,10 @@ export class HeadingFinder {
 }
 
 export class NavigationHelper {
-	static async scrollToHeading(
+	static scrollToHeading(
 		markdownView: MarkdownView,
 		heading: HeadingInfo
-	): Promise<void> {
+	): void {
 		const file = markdownView.file;
 		if (!file) return;
 

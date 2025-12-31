@@ -577,7 +577,7 @@ export class FloatingHeadingsUIManager {
 		const markdownView = this.plugin.getActiveMarkdownView();
 		if (!markdownView) return;
 
-		await NavigationHelper.scrollToHeading(markdownView, heading);
+		NavigationHelper.scrollToHeading(markdownView, heading);
 		this.setActiveHeading(index);
 
 		if (this.plugin.settings.hidePanelOnNavigation) {
