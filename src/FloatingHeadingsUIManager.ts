@@ -217,12 +217,12 @@ export class FloatingHeadingsUIManager {
 
 		const closestHeadingIndex = this.findClosestHeading(
 			markdownView,
-			headings
+			headings,
 		);
 		if (closestHeadingIndex === null) return;
 
 		const items = this.expandedPanel.querySelectorAll(
-			".floating-heading-item"
+			".floating-heading-item",
 		);
 		const targetItem = items[closestHeadingIndex] as HTMLElement;
 
@@ -252,19 +252,19 @@ export class FloatingHeadingsUIManager {
 		const fittingHeadings = headings.slice(0, maxLines);
 		const calculatedHeight = Math.min(
 			headings.length * this.expandedItemHeight + this.expandedPadding,
-			maxHeight
+			maxHeight,
 		);
 
 		const roundedHeight = Math.max(
 			20,
-			Math.min(800, Math.round(calculatedHeight / 20) * 20)
+			Math.min(800, Math.round(calculatedHeight / 20) * 20),
 		);
 
 		if (
 			roundedHeight !== this.lastCollapsedHeight ||
 			!this.areHeadingsEqual(
 				this.lastRenderedCollapsedHeadings,
-				fittingHeadings
+				fittingHeadings,
 			)
 		) {
 			if (this.currentHeightClass) {
@@ -278,7 +278,7 @@ export class FloatingHeadingsUIManager {
 			this.collapsedSidebar.empty();
 			fittingHeadings.forEach((heading, index) => {
 				this.collapsedSidebar!.appendChild(
-					this.createHeadingLine(heading, index)
+					this.createHeadingLine(heading, index),
 				);
 			});
 
@@ -288,7 +288,7 @@ export class FloatingHeadingsUIManager {
 
 	private areHeadingsEqual(
 		headings1: HeadingInfo[],
-		headings2: HeadingInfo[]
+		headings2: HeadingInfo[],
 	): boolean {
 		if (headings1.length !== headings2.length) return false;
 		for (let i = 0; i < headings1.length; i++) {
@@ -321,7 +321,7 @@ export class FloatingHeadingsUIManager {
 			this.lastRenderedExpandedHeadings.length > 0 &&
 			this.areHeadingsEqual(
 				this.lastRenderedExpandedHeadings,
-				headingsToShow
+				headingsToShow,
 			)
 		) {
 			this.updateActiveHeading();
@@ -335,27 +335,27 @@ export class FloatingHeadingsUIManager {
 		const dynamicLevels = this.calculateDynamicLevels(headingsToShow);
 		const headingIndexMap = new Map<string, number>();
 		allHeadings.forEach((h, idx) =>
-			headingIndexMap.set(`${h.text}_${h.line}_${h.level}`, idx)
+			headingIndexMap.set(`${h.text}_${h.line}_${h.level}`, idx),
 		);
 
 		const fragment = document.createDocumentFragment();
 		headingsToShow.forEach((heading, index) => {
 			const originalIndex =
 				headingIndexMap.get(
-					`${heading.text}_${heading.line}_${heading.level}`
+					`${heading.text}_${heading.line}_${heading.level}`,
 				) ?? index;
 			const hasChildren = this.doesHeadingHaveChildren(
 				headingsToShow,
 				index,
-				dynamicLevels
+				dynamicLevels,
 			);
 			fragment.appendChild(
 				this.createExpandedHeadingItem(
 					heading,
 					originalIndex,
 					dynamicLevels[index],
-					hasChildren
-				)
+					hasChildren,
+				),
 			);
 		});
 
@@ -369,7 +369,7 @@ export class FloatingHeadingsUIManager {
 		if (headings.length === 0) return [];
 
 		const uniqueLevels = Array.from(
-			new Set(headings.map((h) => h.level))
+			new Set(headings.map((h) => h.level)),
 		).sort((a, b) => a - b);
 
 		const levelMapping = new Map<number, number>();
@@ -383,7 +383,7 @@ export class FloatingHeadingsUIManager {
 	private doesHeadingHaveChildren(
 		headings: HeadingInfo[],
 		currentIndex: number,
-		dynamicLevels: number[]
+		dynamicLevels: number[],
 	): boolean {
 		const currentLevel = dynamicLevels[currentIndex];
 		for (let i = currentIndex + 1; i < headings.length; i++) {
@@ -398,7 +398,7 @@ export class FloatingHeadingsUIManager {
 		if (!this.expandedPanel) return;
 
 		const items = this.expandedPanel.querySelectorAll(
-			".floating-heading-item"
+			".floating-heading-item",
 		) as NodeListOf<HTMLElement>;
 
 		items.forEach((item) => {
@@ -413,7 +413,7 @@ export class FloatingHeadingsUIManager {
 					currentElement.classList.contains("floating-heading-item")
 				) {
 					const currentLevel = parseInt(
-						currentElement.dataset.level || "0"
+						currentElement.dataset.level || "0",
 					);
 					if (currentLevel <= parentLevel) {
 						break;
@@ -433,13 +433,13 @@ export class FloatingHeadingsUIManager {
 	private handleCollapseToggle(
 		event: MouseEvent,
 		heading: HeadingInfo,
-		index: number
+		index: number,
 	): void {
 		event.stopPropagation();
 
 		const iconElement = event.currentTarget as HTMLElement;
 		const headingItem = iconElement.closest(
-			".floating-heading-item"
+			".floating-heading-item",
 		) as HTMLElement;
 		if (!headingItem) return;
 
@@ -466,7 +466,7 @@ export class FloatingHeadingsUIManager {
 			currentElement.classList.contains("floating-heading-item")
 		) {
 			const currentLevel: number = parseInt(
-				currentElement.dataset.level || "0"
+				currentElement.dataset.level || "0",
 			);
 			if (currentLevel <= parentLevel) {
 				break;
@@ -488,7 +488,7 @@ export class FloatingHeadingsUIManager {
 					if (currentLevel <= visibilityDepthLimit) {
 						el.removeClass("collapsed-hidden");
 						visibilityDepthLimit = el.classList.contains(
-							"collapsed"
+							"collapsed",
 						)
 							? currentLevel
 							: currentLevel + 1;
@@ -504,7 +504,7 @@ export class FloatingHeadingsUIManager {
 		heading: HeadingInfo,
 		index: number,
 		dynamicLevel: number,
-		hasChildren: boolean
+		hasChildren: boolean,
 	): HTMLElement {
 		const item = DOMHelper.createDiv("floating-heading-item");
 
@@ -519,7 +519,7 @@ export class FloatingHeadingsUIManager {
 			item.addClass("has-collapse-icon");
 
 			const collapseIcon = DOMHelper.createDiv(
-				"floating-heading-collapse-icon"
+				"floating-heading-collapse-icon",
 			);
 			const headingId = this.getHeadingId(heading, index);
 			const isCollapsed = this.collapsedHeadings.has(headingId);
@@ -559,7 +559,7 @@ export class FloatingHeadingsUIManager {
 
 	private createHeadingLine(
 		heading: HeadingInfo,
-		index: number
+		index: number,
 	): HTMLElement {
 		const line = DOMHelper.createDiv("floating-heading-line");
 
@@ -570,10 +570,7 @@ export class FloatingHeadingsUIManager {
 		return line;
 	}
 
-	private async handleHeadingClick(
-		heading: HeadingInfo,
-		index: number
-	): Promise<void> {
+	private handleHeadingClick(heading: HeadingInfo, index: number): void {
 		const markdownView = this.plugin.getActiveMarkdownView();
 		if (!markdownView) return;
 
@@ -595,17 +592,17 @@ export class FloatingHeadingsUIManager {
 		if (headings.length === 0) return;
 
 		const items = this.expandedPanel.querySelectorAll(
-			".floating-heading-item"
+			".floating-heading-item",
 		);
-		items.forEach((item) => (item as HTMLElement).removeClass("active"));
+		items.forEach((item) => item.removeClass("active"));
 
 		const closestHeading = this.findClosestHeading(markdownView, headings);
 		if (closestHeading !== null) {
 			const targetItem = Array.from(items).find(
-				(item, index) => index === closestHeading
+				(item, index) => index === closestHeading,
 			);
 			if (targetItem) {
-				(targetItem as HTMLElement).addClass("active");
+				targetItem.addClass("active");
 			}
 		}
 	}
@@ -614,32 +611,32 @@ export class FloatingHeadingsUIManager {
 		if (!this.expandedPanel) return;
 
 		const items = this.expandedPanel.querySelectorAll(
-			".floating-heading-item"
+			".floating-heading-item",
 		);
 
-		items.forEach((item) => (item as HTMLElement).removeClass("active"));
+		items.forEach((item) => item.removeClass("active"));
 
 		const targetItem = items[headingIndex];
 		if (targetItem) {
-			(targetItem as HTMLElement).addClass("active");
+			targetItem.addClass("active");
 		}
 	}
 
 	private findClosestHeading(
 		markdownView: MarkdownView,
-		headings: HeadingInfo[]
+		headings: HeadingInfo[],
 	): number | null {
 		const isReadingMode = this.plugin.isReadingMode();
 
 		if (isReadingMode) {
 			return HeadingFinder.findClosestHeadingInReadingMode(
 				markdownView,
-				headings
+				headings,
 			);
 		} else {
 			return HeadingFinder.findClosestHeadingInEditMode(
 				markdownView,
-				headings
+				headings,
 			);
 		}
 	}
@@ -664,7 +661,7 @@ export class FloatingHeadingsUIManager {
 
 	private loadCollapsedState(): void {
 		const saved = this.plugin.app.loadLocalStorage(
-			"floating-headings-collapsed-state"
+			"floating-headings-collapsed-state",
 		);
 		if (saved) {
 			try {
@@ -682,7 +679,7 @@ export class FloatingHeadingsUIManager {
 			const collapsedArray = Array.from(this.collapsedHeadings);
 			this.plugin.app.saveLocalStorage(
 				"floating-headings-collapsed-state",
-				JSON.stringify(collapsedArray)
+				JSON.stringify(collapsedArray),
 			);
 		} catch (error) {
 			console.warn("Failed to save collapsed headings state:", error);
@@ -729,7 +726,7 @@ export class FloatingHeadingsUIManager {
 		if (!this.expandedPanel) return;
 
 		const hasFilter = !!this.expandedPanel.querySelector(
-			".floating-headings-filter-container"
+			".floating-headings-filter-container",
 		);
 		const shouldHaveFilter = this.plugin.settings.enableFilter;
 
@@ -743,22 +740,22 @@ export class FloatingHeadingsUIManager {
 		} else if (!hasFilter && shouldHaveFilter) {
 			this.expandedPanel.insertBefore(
 				this.createFilterContainer(),
-				this.expandedPanel.firstChild
+				this.expandedPanel.firstChild,
 			);
 		}
 	}
 
 	private createFilterContainer(): HTMLElement {
 		const container = DOMHelper.createDiv(
-			"floating-headings-filter-container"
+			"floating-headings-filter-container",
 		);
 
 		const inputBox = DOMHelper.createDiv(
-			"floating-headings-filter-input-box"
+			"floating-headings-filter-input-box",
 		);
 
 		const searchIcon = DOMHelper.createDiv(
-			"floating-headings-filter-icon search-icon"
+			"floating-headings-filter-icon search-icon",
 		);
 		setIcon(searchIcon, "search");
 
@@ -768,7 +765,7 @@ export class FloatingHeadingsUIManager {
 		this.filterInput.className = "floating-headings-filter-input";
 
 		const clearIcon = DOMHelper.createDiv(
-			"floating-headings-filter-icon clear-icon hidden"
+			"floating-headings-filter-icon clear-icon hidden",
 		);
 		setIcon(clearIcon, "x");
 
@@ -819,7 +816,7 @@ export class FloatingHeadingsUIManager {
 			this.filteredHeadings = [];
 		} else {
 			this.filteredHeadings = allHeadings.filter((heading) =>
-				heading.text.toLowerCase().includes(this.filterQuery)
+				heading.text.toLowerCase().includes(this.filterQuery),
 			);
 		}
 
@@ -852,7 +849,7 @@ export class FloatingHeadingsUIManager {
 
 		this.containerElement.classList.toggle(
 			"position-left",
-			settings.sidebarPosition === "left"
+			settings.sidebarPosition === "left",
 		);
 	}
 }
