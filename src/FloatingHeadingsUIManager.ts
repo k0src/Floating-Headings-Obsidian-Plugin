@@ -399,9 +399,10 @@ export class FloatingHeadingsUIManager {
 
 		const items = this.expandedPanel.querySelectorAll(
 			".floating-heading-item",
-		) as NodeListOf<HTMLElement>;
+		);
 
-		items.forEach((item) => {
+		items.forEach((el) => {
+			const item = el as HTMLElement;
 			const isCollapsed = item.classList.contains("collapsed");
 			if (isCollapsed) {
 				const parentLevel = parseInt(item.dataset.level || "0");
