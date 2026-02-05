@@ -19,7 +19,7 @@ export class FloatingHeadingsStateManager {
 	constructor(
 		app: App,
 		settings: FloatingHeadingsSettings,
-		ui: FloatingHeadingsUIManager
+		ui: FloatingHeadingsUIManager,
 	) {
 		this.app = app;
 		this.settings = settings;
@@ -31,7 +31,7 @@ export class FloatingHeadingsStateManager {
 	handleActiveLeafChange(leaf: WorkspaceLeaf | null): void {
 		this.cleanupUI();
 
-		if (!leaf || !this.settings.enabled) {
+		if (!leaf) {
 			this.activeMarkdownView = null;
 			this.currentMode = null;
 			return;
@@ -67,7 +67,7 @@ export class FloatingHeadingsStateManager {
 					this.updateHeadings();
 				}
 			},
-			500
+			500,
 		);
 	}
 
@@ -81,7 +81,7 @@ export class FloatingHeadingsStateManager {
 						this.updateHeadings();
 					}
 				},
-				800
+				800,
 			);
 		}
 	}
@@ -111,7 +111,7 @@ export class FloatingHeadingsStateManager {
 	}
 
 	updateHeadings(): void {
-		if (!this.activeMarkdownView || !this.settings.enabled) {
+		if (!this.activeMarkdownView) {
 			this.currentHeadings = [];
 			return;
 		}
@@ -167,7 +167,7 @@ export class FloatingHeadingsStateManager {
 	}
 
 	private getCachedHeadings(
-		cacheKey: string
+		cacheKey: string,
 	): { headings: HeadingInfo[]; timestamp: number } | null {
 		const cached = this.headingsCache.get(cacheKey);
 		if (cached) {
@@ -181,14 +181,14 @@ export class FloatingHeadingsStateManager {
 			this.settings.useCustomRegex &&
 			this.settings.customRegexPatterns?.length > 0 &&
 			this.settings.customRegexPatterns.some(
-				(pattern) => pattern.trim() !== ""
+				(pattern) => pattern.trim() !== "",
 			)
 		);
 	}
 
 	private async processCustomRegexHeadings(
 		file: TFile,
-		cacheKey: string
+		cacheKey: string,
 	): Promise<void> {
 		try {
 			const content = await this.app.vault.cachedRead(file);
@@ -203,13 +203,13 @@ export class FloatingHeadingsStateManager {
 	private processStandardHeadings(file: TFile, cacheKey: string): void {
 		const metadataHeadings = HeadingParser.getHeadingsFromCache(
 			{ app: this.app, settings: this.settings },
-			this.activeMarkdownView!
+			this.activeMarkdownView!,
 		);
 
 		if (metadataHeadings.length > 0) {
 			const filteredHeadings = HeadingParser.filterHeadingsByLevel(
 				metadataHeadings,
-				this.settings.maxHeadingLevel
+				this.settings.maxHeadingLevel,
 			);
 			this.updateHeadingsState(filteredHeadings, cacheKey);
 		} else {
@@ -222,17 +222,17 @@ export class FloatingHeadingsStateManager {
 			content,
 			this.settings.parseHtmlElements,
 			this.settings.useCustomRegex,
-			this.settings.customRegexPatterns
+			this.settings.customRegexPatterns,
 		);
 		return HeadingParser.filterHeadingsByLevel(
 			allHeadings,
-			this.settings.maxHeadingLevel
+			this.settings.maxHeadingLevel,
 		);
 	}
 
 	private updateHeadingsState(
 		headings: HeadingInfo[],
-		cacheKey: string
+		cacheKey: string,
 	): void {
 		const headingsHash = this.hashHeadings(headings);
 		if (headingsHash === this.lastHeadingsHash) return;
@@ -288,7 +288,7 @@ export class FloatingHeadingsStateManager {
 
 	private ensureRelativePositioning(element: HTMLElement): void {
 		if (window.getComputedStyle(element).position === "static") {
-			element.addClass("relative-position");
+			element.addClass("floating-headings-relative-position");
 		}
 	}
 

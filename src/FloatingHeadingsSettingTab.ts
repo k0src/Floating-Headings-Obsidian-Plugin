@@ -16,22 +16,9 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName("Enable plugin")
-			.setDesc("Enable or disable the floating headings sidebar.")
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.plugin.settings.enabled)
-					.onChange(async (value) => {
-						this.plugin.settings.enabled = value;
-						await this.plugin.saveSettings();
-						this.plugin.handleEnableDisable();
-					})
-			);
-
-		new Setting(containerEl)
 			.setName("Enable filter")
 			.setDesc(
-				"Enable filter input to search headings in the expanded panel."
+				"Enable filter input to search headings in the expanded panel.",
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -40,13 +27,13 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.enableFilter = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
 			.setName("Hide panel on navigation")
 			.setDesc(
-				"Hide the expanded panel after clicking on a heading to navigate."
+				"Hide the expanded panel after clicking on a heading to navigate.",
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -54,7 +41,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.hidePanelOnNavigation = value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -69,7 +56,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.verticalPosition = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -81,7 +68,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -97,7 +84,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.clearCache();
 						this.plugin.updateHeadings();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -110,7 +97,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.clearCache();
 						this.plugin.updateHeadings();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl).setName("Appearance").setHeading();
@@ -127,7 +114,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.sidebarPosition = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -142,7 +129,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.panelMaxHeight = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -154,7 +141,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -169,7 +156,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.panelWidth = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -181,7 +168,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -196,7 +183,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 					.onChange(async (value: "top" | "previous" | "closest") => {
 						this.plugin.settings.panelScrollPosition = value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -211,7 +198,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.collapsedWidth = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -223,7 +210,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -238,7 +225,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.lineThickness = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -250,7 +237,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
@@ -265,7 +252,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						this.plugin.settings.animationDuration = value;
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -277,7 +264,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.ui?.refresh();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl).setName("Advanced").setHeading();
@@ -285,7 +272,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Parse HTML elements")
 			.setDesc(
-				`Strip HTML tags from heading text to show clean text in the sidebar. (e.g. ### <span style="color:rgb(0, 149, 255)">A Heading</span> -> ### A Heading)`
+				`Strip HTML tags from heading text to show clean text in the sidebar. (e.g. ### <span style="color:rgb(0, 149, 255)">A Heading</span> -> ### A Heading)`,
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -299,7 +286,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -311,13 +298,13 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();
-					})
+					}),
 			);
 
 		new Setting(containerEl)
 			.setName("Use custom regex")
 			.setDesc(
-				"Enable custom regular expression for parsing headings instead of standard Markdown format."
+				"Enable custom regular expression for parsing headings instead of standard Markdown format.",
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -339,7 +326,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();
-					})
+					}),
 			)
 			.addExtraButton((button) =>
 				button
@@ -354,14 +341,14 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 						this.plugin.updateHeadings();
 						this.display();
-					})
+					}),
 			);
 
 		if (this.plugin.settings.useCustomRegex) {
 			new Setting(containerEl)
 				.setName("Regex patterns")
 				.setDesc(
-					"Define multiple regex patterns to extract heading text."
+					"Define multiple regex patterns to extract heading text.",
 				);
 
 			this.renderRegexPatterns(containerEl);
@@ -376,7 +363,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 							this.plugin.settings.customRegexPatterns.push("");
 							await this.plugin.saveSettings();
 							this.display();
-						})
+						}),
 				);
 		}
 	}
@@ -395,9 +382,13 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 							value.trim() === "" ||
 							HeadingParser.isValidRegex(value)
 						) {
-							text.inputEl.removeClass("invalid-regex");
+							text.inputEl.removeClass(
+								"floating-headings-invalid-regex",
+							);
 						} else {
-							text.inputEl.addClass("invalid-regex");
+							text.inputEl.addClass(
+								"floating-headings-invalid-regex",
+							);
 						}
 					};
 
@@ -407,7 +398,9 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						pattern.trim() !== "" &&
 						!HeadingParser.isValidRegex(pattern)
 					) {
-						text.inputEl.addClass("invalid-regex");
+						text.inputEl.addClass(
+							"floating-headings-invalid-regex",
+						);
 					}
 
 					return text;
@@ -419,7 +412,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 						.onClick(async () => {
 							this.plugin.settings.customRegexPatterns.splice(
 								index,
-								1
+								1,
 							);
 							if (
 								this.plugin.settings.customRegexPatterns
@@ -430,7 +423,7 @@ export class FloatingHeadingsSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 							this.plugin.updateHeadings();
 							this.display();
-						})
+						}),
 				);
 		});
 	}

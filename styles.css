@@ -1,4 +1,4 @@
-.relative-position {
+.floating-headings-relative-position {
 	position: relative !important;
 }
 
@@ -187,7 +187,9 @@
 	cursor: pointer;
 	color: var(--icon-color);
 	opacity: var(--icon-opacity);
-	transition: transform 0.2s ease, color 0.2s ease;
+	transition:
+		transform 0.2s ease,
+		color 0.2s ease;
 	flex-shrink: 0;
 	display: flex;
 	align-items: center;
@@ -268,7 +270,7 @@
 	transform-origin: left center;
 }
 
-.invalid-regex {
+.floating-headings-invalid-regex {
 	border-color: var(--color-red);
 	background-color: var(--color-red-rgb, 255, 70, 70, 0.1);
 	box-shadow: 0 0 0 2px rgba(var(--color-red-rgb, 255, 70, 70), 0.2);
