@@ -38,7 +38,6 @@ Access via **Settings → Community Plugins → Floating Headings**
 
 ### Basic
 
-- **Enable plugin**: Toggle on/off
 - **Enable filter**: Search headings in expanded panel
 - **Hide panel on navigation**: Auto-hide after clicking headings
 - **Sidebar position**: Left or right side placement
