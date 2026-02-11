@@ -22,15 +22,15 @@ An Obsidian plugin that displays a floating, collapsible outline of your note's 
 
 ## Installation
 
+### From Obsidian Community Plugins
+
+Open the Community Plugins tab in the Obsidian settings and search for "Floating Headings", or click [here](https://obsidian.md/plugins?id=floating-headings).
+
 ### Manual Installation
 
 1. Download the latest release from the [releases page](https://github.com/k0src/Floating-Headings-Obsidian-Plugin/releases).
 2. Extract the files to your vault's `.obsidian/plugins/floating-headings/` folder.
 3. Enable the plugin in Obsidian's Community Plugins settings.
-
-### From Obsidian Community Plugins
-
-_Coming soon_
 
 ## Settings
 
