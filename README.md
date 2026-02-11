@@ -1,6 +1,6 @@
 # Floating Headings
 
-An Obsidian plugin that displays a floating, collapsible outline of your note's headings on the right side of the editor.
+An Obsidian plugin that displays a floating, collapsible (Notion-style) outline of your note's headings on the side of the editor.
 
 ![splash](./assets/splash.png)
 
