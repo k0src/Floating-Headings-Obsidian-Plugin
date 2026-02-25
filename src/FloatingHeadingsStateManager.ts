@@ -31,7 +31,7 @@ export class FloatingHeadingsStateManager {
 	handleActiveLeafChange(leaf: WorkspaceLeaf | null): void {
 		this.cleanupUI();
 
-		if (!leaf || !this.settings.enabled) {
+		if (!leaf) {
 			this.activeMarkdownView = null;
 			this.currentMode = null;
 			return;
@@ -111,7 +111,7 @@ export class FloatingHeadingsStateManager {
 	}
 
 	updateHeadings(): void {
-		if (!this.activeMarkdownView || !this.settings.enabled) {
+		if (!this.activeMarkdownView) {
 			this.currentHeadings = [];
 			return;
 		}
@@ -288,7 +288,7 @@ export class FloatingHeadingsStateManager {
 
 	private ensureRelativePositioning(element: HTMLElement): void {
 		if (window.getComputedStyle(element).position === "static") {
-			element.addClass("relative-position");
+			element.addClass("floating-headings-relative-position");
 		}
 	}
 

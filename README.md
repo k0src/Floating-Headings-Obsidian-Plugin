@@ -1,20 +1,20 @@
 # Floating Headings
 
-An Obsidian plugin that displays a floating, collapsible outline of your note's headings on the right side of the editor.
+An Obsidian plugin that displays a floating, collapsible (Notion-style) outline of your note's headings on the side of the editor.
 
 ![splash](./assets/splash.png)
 
 ## Features
 
--   **Floating sidebar**: Collapsed view with visual heading indicators
--   **Hover expansion**: Full heading text in expandable panel
--   **Click navigation**: Jump to any heading instantly
--   **Filter search**: Search and filter headings in real-time
--   **Collapsible groups**: Expand/collapse heading hierarchies
--   **Position control**: Left/right sidebar placement and vertical positioning
--   **Level filtering**: Show only specific heading levels (H1-H6)
--   **Custom parsing**: HTML tag stripping and regex pattern support
--   **Theme adaptive**: Automatically matches your Obsidian theme
+- **Floating sidebar**: Collapsed view with visual heading indicators
+- **Hover expansion**: Full heading text in expandable panel
+- **Click navigation**: Jump to any heading instantly
+- **Filter search**: Search and filter headings in real-time
+- **Collapsible groups**: Expand/collapse heading hierarchies
+- **Position control**: Left/right sidebar placement and vertical positioning
+- **Level filtering**: Show only specific heading levels (H1-H6)
+- **Custom parsing**: HTML tag stripping and regex pattern support
+- **Theme adaptive**: Automatically matches your Obsidian theme
 
 ### Adapts to Themes
 
@@ -22,15 +22,15 @@ An Obsidian plugin that displays a floating, collapsible outline of your note's 
 
 ## Installation
 
+### From Obsidian Community Plugins
+
+Open the Community Plugins tab in the Obsidian settings and search for "Floating Headings", or click [here](https://obsidian.md/plugins?id=floating-headings).
+
 ### Manual Installation
 
 1. Download the latest release from the [releases page](https://github.com/k0src/Floating-Headings-Obsidian-Plugin/releases).
 2. Extract the files to your vault's `.obsidian/plugins/floating-headings/` folder.
 3. Enable the plugin in Obsidian's Community Plugins settings.
-
-### From Obsidian Community Plugins
-
-_Coming soon_
 
 ## Settings
 
@@ -38,28 +38,27 @@ Access via **Settings → Community Plugins → Floating Headings**
 
 ### Basic
 
--   **Enable plugin**: Toggle on/off
--   **Enable filter**: Search headings in expanded panel
--   **Hide panel on navigation**: Auto-hide after clicking headings
--   **Sidebar position**: Left or right side placement
--   **Vertical position**: Sidebar vertical positioning (0-100%)
--   **Maximum heading level**: Filter by heading level (1-6)
+- **Enable filter**: Search headings in expanded panel
+- **Hide panel on navigation**: Auto-hide after clicking headings
+- **Sidebar position**: Left or right side placement
+- **Vertical position**: Sidebar vertical positioning (0-100%)
+- **Maximum heading level**: Filter by heading level (1-6)
 
 ### Appearance
 
--   **Panel width**: Expanded panel width (180-400px)
--   **Panel max height**: Maximum panel height (100-800px)
--   **Panel scroll position**: Top, previous position, or current header
--   **Sidebar width**: Collapsed sidebar width (8-48px)
--   **Line thickness**: Heading indicator line thickness (1-8px)
--   **Animation duration**: Transition speed (50-500ms)
+- **Panel width**: Expanded panel width (180-400px)
+- **Panel max height**: Maximum panel height (100-800px)
+- **Panel scroll position**: Top, previous position, or current header
+- **Sidebar width**: Collapsed sidebar width (8-48px)
+- **Line thickness**: Heading indicator line thickness (1-8px)
+- **Animation duration**: Transition speed (50-500ms)
 
 ### Advanced
 
--   **Parse HTML elements**: Strip HTML tags from headings
--   **Custom regex**: Define custom heading patterns with named groups
+- **Parse HTML elements**: Strip HTML tags from headings
+- **Custom regex**: Define custom heading patterns with named groups
 
-> [!NOTE] 
+> [!NOTE]
 > **The parser processes heading text according to settings priority:**
 >
 > 1. If a custom Regex pattern is enabled, the `heading_text` named group is displayed in the panel. No other cleaning or filtering is applied.
@@ -74,39 +73,39 @@ Custom Regex patterns can be used to parse and extract heading text from headers
 
 **Link heading**
 
--   **Regex pattern:**
+- **Regex pattern:**
     ```regex
     /^(#{1,6})\s+\[\[(?<heading_text>[^\]]+)\]\]\s*$/
     ```
--   **Example match:**
+- **Example match:**
     ```
     # [[Some Page]]
     ```
--   **Extracted heading text:** `Some Page`
+- **Extracted heading text:** `Some Page`
 
 **Inline LaTeX**
 
--   **Regex pattern:**
+- **Regex pattern:**
     ```regex
     /^(#{1,6})\s+\$(?<heading_text>[^$]+)\$\s*$/
     ```
--   **Example match:**
+- **Example match:**
     ```
     ## $O^n$
     ```
--   **Extracted heading text:** `O^n`
+- **Extracted heading text:** `O^n`
 
 **List heading**
 
--   **Regex pattern:**
+- **Regex pattern:**
     ```regex
     /^(#{1,6})\s+[a-zA-Z]\.\s+(?<heading_text>.+)$/
     ```
--   **Example match:**
+- **Example match:**
     ```
     #### a. List Heading
     ```
--   **Extracted heading text:** `List Heading`
+- **Extracted heading text:** `List Heading`
 
 ## Customization
 

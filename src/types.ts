@@ -5,7 +5,6 @@ export interface HeadingInfo {
 }
 
 export interface FloatingHeadingsSettings {
-	enabled: boolean;
 	verticalPosition: number;
 	maxHeadingsInCollapsed: number;
 	hoverColor: string;
@@ -25,7 +24,6 @@ export interface FloatingHeadingsSettings {
 }
 
 export const DEFAULT_SETTINGS: FloatingHeadingsSettings = {
-	enabled: true,
 	verticalPosition: 50,
 	maxHeadingsInCollapsed: 25,
 	hoverColor: "var(--text-accent)",

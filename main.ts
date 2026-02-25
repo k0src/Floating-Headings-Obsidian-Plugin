@@ -25,7 +25,7 @@ export default class FloatingHeadingsPlugin extends Plugin {
 		this.stateManager = new FloatingHeadingsStateManager(
 			this.app,
 			this.settings,
-			this.ui
+			this.ui,
 		);
 		this.eventBinder = new EventBinder(this, this.stateManager);
 
@@ -47,14 +47,13 @@ export default class FloatingHeadingsPlugin extends Plugin {
 
 	onunload() {
 		this.stateManager?.cleanup();
-		this.eventBinder?.cleanup();
 	}
 
 	async loadSettings() {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
-			await this.loadData()
+			await this.loadData(),
 		);
 
 		if (
@@ -75,18 +74,6 @@ export default class FloatingHeadingsPlugin extends Plugin {
 
 	clearCache() {
 		this.stateManager?.clearCache();
-	}
-
-	handleEnableDisable() {
-		if (this.settings.enabled) {
-			const activeView =
-				this.app.workspace.getActiveViewOfType(MarkdownView);
-			if (activeView) {
-				this.stateManager?.handleActiveLeafChange(activeView.leaf);
-			}
-		} else {
-			this.stateManager?.cleanup();
-		}
 	}
 
 	getCurrentHeadings(): HeadingInfo[] {
