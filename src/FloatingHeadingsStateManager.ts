@@ -19,7 +19,7 @@ export class FloatingHeadingsStateManager {
 	constructor(
 		app: App,
 		settings: FloatingHeadingsSettings,
-		ui: FloatingHeadingsUIManager
+		ui: FloatingHeadingsUIManager,
 	) {
 		this.app = app;
 		this.settings = settings;
@@ -67,7 +67,7 @@ export class FloatingHeadingsStateManager {
 					this.updateHeadings();
 				}
 			},
-			500
+			500,
 		);
 	}
 
@@ -81,7 +81,7 @@ export class FloatingHeadingsStateManager {
 						this.updateHeadings();
 					}
 				},
-				800
+				800,
 			);
 		}
 	}
@@ -122,6 +122,8 @@ export class FloatingHeadingsStateManager {
 		const currentContentHash = this.generateContentHash(file);
 		if (currentContentHash === this.lastContentHash) return;
 
+		this.lastContentHash = currentContentHash;
+
 		const cacheKey = this.generateCacheKey(file);
 		const cached = this.getCachedHeadings(cacheKey);
 
@@ -140,8 +142,6 @@ export class FloatingHeadingsStateManager {
 		} else {
 			this.processStandardHeadings(file, cacheKey);
 		}
-
-		this.lastContentHash = currentContentHash;
 	}
 
 	private generateContentHash(file: TFile): string {
@@ -167,7 +167,7 @@ export class FloatingHeadingsStateManager {
 	}
 
 	private getCachedHeadings(
-		cacheKey: string
+		cacheKey: string,
 	): { headings: HeadingInfo[]; timestamp: number } | null {
 		const cached = this.headingsCache.get(cacheKey);
 		if (cached) {
@@ -181,14 +181,14 @@ export class FloatingHeadingsStateManager {
 			this.settings.useCustomRegex &&
 			this.settings.customRegexPatterns?.length > 0 &&
 			this.settings.customRegexPatterns.some(
-				(pattern) => pattern.trim() !== ""
+				(pattern) => pattern.trim() !== "",
 			)
 		);
 	}
 
 	private async processCustomRegexHeadings(
 		file: TFile,
-		cacheKey: string
+		cacheKey: string,
 	): Promise<void> {
 		try {
 			const content = await this.app.vault.cachedRead(file);
@@ -203,13 +203,13 @@ export class FloatingHeadingsStateManager {
 	private processStandardHeadings(file: TFile, cacheKey: string): void {
 		const metadataHeadings = HeadingParser.getHeadingsFromCache(
 			{ app: this.app, settings: this.settings },
-			this.activeMarkdownView!
+			this.activeMarkdownView!,
 		);
 
 		if (metadataHeadings.length > 0) {
 			const filteredHeadings = HeadingParser.filterHeadingsByLevel(
 				metadataHeadings,
-				this.settings.maxHeadingLevel
+				this.settings.maxHeadingLevel,
 			);
 			this.updateHeadingsState(filteredHeadings, cacheKey);
 		} else {
@@ -222,17 +222,17 @@ export class FloatingHeadingsStateManager {
 			content,
 			this.settings.parseHtmlElements,
 			this.settings.useCustomRegex,
-			this.settings.customRegexPatterns
+			this.settings.customRegexPatterns,
 		);
 		return HeadingParser.filterHeadingsByLevel(
 			allHeadings,
-			this.settings.maxHeadingLevel
+			this.settings.maxHeadingLevel,
 		);
 	}
 
 	private updateHeadingsState(
 		headings: HeadingInfo[],
-		cacheKey: string
+		cacheKey: string,
 	): void {
 		const headingsHash = this.hashHeadings(headings);
 		if (headingsHash === this.lastHeadingsHash) return;
