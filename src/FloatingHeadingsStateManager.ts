@@ -40,6 +40,8 @@ export class FloatingHeadingsStateManager {
 		if (leaf.view instanceof MarkdownView) {
 			this.activeMarkdownView = leaf.view;
 			this.currentMode = leaf.view.getMode?.() || null;
+			this.lastContentHash = "";
+			this.lastHeadingsHash = "";
 			this.updateHeadings();
 			this.mountUI();
 		} else {
